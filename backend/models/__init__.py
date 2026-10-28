@@ -8,5 +8,15 @@ from backend.models.session import GameSession
 from backend.models.mastery import SkillMastery
 from backend.models.achievement import UserAchievement
 from backend.models.feedback import Feedback
+from backend.models.question import Question
+from backend.models.question_history import UserQuestionHistory
 
-__all__ = ["User", "GameSession", "SkillMastery", "UserAchievement", "Feedback"]
+__all__ = [
+    "User",
+    "GameSession",
+    "SkillMastery",
+    "UserAchievement",
+    "Feedback",
+    "Question",
+    "UserQuestionHistory",
+]

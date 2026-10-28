@@ -27,3 +27,4 @@ class User(Base):
     mastery_records = relationship("SkillMastery", back_populates="user", cascade="all, delete-orphan")
     achievements = relationship("UserAchievement", back_populates="user", cascade="all, delete-orphan")
     feedback_entries = relationship("Feedback", back_populates="user")
+    question_histories = relationship("UserQuestionHistory", back_populates="user", cascade="all, delete-orphan")

@@ -169,6 +169,18 @@ class ApiClient {
   async getExemplar(scenarioId) {
     return await this.request(`/ai/exemplar/${scenarioId}`);
   }
+
+  async generateQuestions(payload) {
+    return await this.request('/questions/generate', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  }
+
+  async getQuestionHistory(gameId = null) {
+    const query = gameId ? `?game_id=${encodeURIComponent(gameId)}` : '';
+    return await this.request(`/questions/history${query}`);
+  }
 }
 
 export const api = new ApiClient();

@@ -525,6 +525,9 @@ class QuestionService:
 
         # Build set of excluded question IDs
         excluded_ids: Set[str] = set(request.exclude_ids or [])
+        game_ids = [request.game_id]
+        if request.game_id in ("sql", "sql-blanks"):
+            game_ids = ["sql", "sql-blanks"]
 
         # History-aware filtering for authenticated users
         mistake_ids: List[str] = []
@@ -532,7 +535,7 @@ class QuestionService:
             # Query questions user previously attempted
             user_history = db.query(UserQuestionHistory).filter(
                 UserQuestionHistory.user_id == user_id,
-                UserQuestionHistory.game_id == request.game_id
+                UserQuestionHistory.game_id.in_(game_ids)
             ).all()
 
             for h in user_history:
@@ -547,7 +550,7 @@ class QuestionService:
         if request.mode == "revision" and mistake_ids:
             revision_query = db.query(Question).filter(
                 Question.id.in_(mistake_ids),
-                Question.game_id == request.game_id
+                Question.game_id.in_(game_ids)
             )
             if request.difficulty != "all":
                 revision_query = revision_query.filter(Question.difficulty == request.difficulty)
@@ -560,7 +563,7 @@ class QuestionService:
         remaining_needed = request.count - len(selected_questions)
         if remaining_needed > 0:
             query = db.query(Question).filter(
-                Question.game_id == request.game_id,
+                Question.game_id.in_(game_ids),
                 Question.validation_status == "verified"
             )
 

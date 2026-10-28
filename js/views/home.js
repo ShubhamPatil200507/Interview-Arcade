@@ -1,6 +1,6 @@
 /**
- * Interview Arcade — Arcade Hub View
- * Handcrafted game library with category filters, tactile card states, and real player preview.
+ * Interview Arcade — Practice Problems Hub View
+ * Professional Technical Interview Preparation Platform
  */
 
 import { progress } from '../services/progress.js';
@@ -9,145 +9,119 @@ import { audio } from '../services/audio.js';
 export const ARCADE_GAMES = [
   {
     id: 'tictactoe',
-    number: '01',
-    title: 'Tic Tac Toe + OOP Quiz',
-    category: 'Systems',
-    description: 'Outsmart the Minimax AI while answering object-oriented design questions to earn bonus points.',
+    title: 'Object-Oriented Design & Minimax',
+    category: 'Systems & OOP',
+    description: 'Solve object-oriented design and design pattern challenges while competing against a Minimax decision tree.',
     difficulty: 'Easy / Med / Hard',
-    tags: ['OOP', 'Minimax', 'Game Theory'],
-    icon: '⚔️',
+    tags: ['OOP', 'Design Patterns', 'Polymorphism'],
     href: '#/game/tictactoe'
   },
   {
     id: 'memory',
-    number: '02',
-    title: 'Technical Memory Match',
-    category: 'Full Stack',
-    description: 'Tactile card-flipping challenge matching technical terms to their exact definitions.',
+    title: 'Computer Science Terminology',
+    category: 'Computer Science',
+    description: 'Interactive recall exercise matching core systems, operating systems, and networking terms to definitions.',
     difficulty: '6 - 12 Pairs',
-    tags: ['Definitions', 'Core CS'],
-    icon: '🃏',
+    tags: ['OS Concepts', 'Memory Models', 'Networks'],
     href: '#/game/memory'
   },
   {
     id: 'aptitude',
-    number: '03',
-    title: 'Quantitative Aptitude',
+    title: 'Quantitative Reasoning & Aptitude',
     category: 'Aptitude',
-    description: 'Placement assessment questions spanning number series, probability, time & work with hints.',
+    description: 'Technical placement aptitude problems spanning number sequences, probability, and speed-work problems.',
     difficulty: 'Easy / Med / Hard',
-    tags: ['Math', 'Reasoning', 'Placement'],
-    icon: '📐',
+    tags: ['Probability', 'Combinatorics', 'Logic'],
     href: '#/game/aptitude'
   },
   {
     id: 'resume',
-    number: '04',
-    title: 'Resume Keyword Matcher',
-    category: 'Career',
-    description: 'Deterministic client-side parser comparing resume keywords against target job descriptions.',
+    title: 'Resume ATS Keyword Scanner',
+    category: 'Career Tools',
+    description: 'Client-side parser comparing resume keywords and action verbs directly against target job descriptions.',
     difficulty: 'Utility',
-    tags: ['Resume', 'Keywords', 'Action Verbs'],
-    icon: '📄',
+    tags: ['ATS Matching', 'Action Verbs', 'Tech Stack'],
     href: '#/resume'
   },
   {
     id: 'sql',
-    number: '05',
-    title: 'SQL Fill in the Blanks',
+    title: 'SQL Query Formulation',
     category: 'Databases',
-    description: 'Inspect relational database schemas and complete missing clauses in SQL queries.',
+    description: 'Inspect relational schemas and complete missing clauses, aggregate filters, and multi-table joins.',
     difficulty: 'Easy / Med / Hard',
-    tags: ['SQL', 'GROUP BY', 'JOINs'],
-    icon: '🗄️',
+    tags: ['SQL', 'GROUP BY', 'JOINs', 'HAVING'],
     href: '#/game/sql'
   },
   {
     id: 'riddles',
-    number: '06',
-    title: 'Visual Logic Riddles',
+    title: 'Visual Pattern Recognition & Logic',
     category: 'Aptitude',
     description: 'Original vector SVG pattern recognition, matrix reasoning, and topological sequence puzzles.',
     difficulty: 'Easy / Med / Hard',
-    tags: ['Visual', 'Matrix', 'Sequences'],
-    icon: '🧩',
+    tags: ['Matrix Reasoning', 'Sequences', 'Visual'],
     href: '#/game/riddles'
   },
   {
     id: 'dsa',
-    number: '07',
-    title: 'DSA Match the Following',
-    category: 'DSA',
-    description: 'Two-column connector linking algorithms and data structures to exact Big-O complexities.',
+    title: 'Data Structures & Big-O Complexities',
+    category: 'Algorithms',
+    description: 'Two-column connector linking algorithms and data structures to exact worst-case and average-case bounds.',
     difficulty: 'Easy / Med / Hard',
-    tags: ['Big-O', 'Algorithms', 'Complexities'],
-    icon: '📊',
+    tags: ['Big-O', 'Algorithms', 'Trees', 'Graphs'],
     href: '#/game/dsa'
   },
   {
     id: 'debugger',
-    number: '08',
-    title: 'Debug the Code (C++)',
-    category: 'Systems',
-    description: 'Inspect C++ snippets to identify out-of-bounds, dangling pointers, and shallow copy bugs.',
+    title: 'C++ Systems & Memory Debugger',
+    category: 'Systems & OOP',
+    description: 'Inspect real C++ snippets to identify dangling pointers, buffer overflows, and RAII safety violations.',
     difficulty: 'Easy / Med / Hard',
-    tags: ['C++', 'RAII', 'Memory Bugs'],
-    icon: '🐛',
+    tags: ['C++', 'RAII', 'Memory Leaks', 'Pointers'],
     href: '#/game/debugger'
   },
   {
     id: 'interview',
-    number: '09',
-    title: 'Placement Interview Simulator',
-    category: 'Career',
-    description: 'High-stakes behavioral STAR methodology & technical system design scenarios with rubric scoring.',
+    title: 'Behavioral (STAR) & System Design Mocks',
+    category: 'Mock Interviews',
+    description: 'Realistic behavioral interview scenarios evaluated on STAR rubrics plus high-concurrency systems design.',
     difficulty: 'Med / Hard',
-    tags: ['STAR', 'Behavioral', 'System Design'],
-    icon: '🎙️',
+    tags: ['STAR Method', 'System Design', 'Behavioral'],
     href: '#/interview'
   },
   {
     id: 'assessment',
-    number: '10',
     title: 'Diagnostic Skill Assessment',
-    category: 'Career',
-    description: 'Rapid 3-minute timed calibration test across 5 core competencies to match your target role.',
+    category: 'Evaluation',
+    description: 'Rapid 3-minute timed evaluation across 5 core competencies to identify your strengths and gaps.',
     difficulty: 'Timed 3m',
-    tags: ['Calibration', 'Placement', 'Diagnostic'],
-    icon: '📊',
+    tags: ['Calibration', 'Skill Evaluation', 'Placement'],
     href: '#/assessment'
   },
   {
     id: 'mistakes',
-    number: '11',
-    title: 'Mistakes & Error Notebook',
-    category: 'Utility',
-    description: 'Deliberate practice notebook cataloging all missed questions with deep explanations and retesting.',
-    difficulty: 'Review',
-    tags: ['Corrections', 'Pedagogy', 'Mastery'],
-    icon: '📖',
+    title: 'Mistake & Revision Notebook',
+    category: 'Revision',
+    description: 'Active revision notebook cataloging every missed question with deep explanations and retesting.',
+    difficulty: 'Revision',
+    tags: ['Spaced Repetition', 'Error Analysis', 'Mastery'],
     href: '#/mistakes'
   },
   {
     id: 'feedback',
-    number: '12',
-    title: 'Feedback Chamber',
-    category: 'Utility',
-    description: 'Log your feedback, bug reports, and observations locally on your device with zero cloud tracking.',
-    difficulty: 'Feedback',
-    tags: ['Feedback', 'Usability', 'Local'],
-    icon: '💬',
+    title: 'Platform Feedback & Support',
+    category: 'Support',
+    description: 'Share feedback, bug reports, and suggestions directly to help improve the platform experience.',
+    difficulty: 'Support',
+    tags: ['Feedback', 'Community', 'Support'],
     href: '#/feedback'
   },
   {
     id: 'dashboard',
-    number: '13',
-    title: 'Progress Log & Analytics',
-    category: 'Utility',
-    description: 'Inspect real session counts, accuracy %, personal bests, and genuine unlocked achievement badges.',
+    title: 'Learning Dashboard & Roadmap',
+    category: 'Analytics',
+    description: 'Inspect verified session history, accuracy percentages, personal bests, and milestone badges.',
     difficulty: 'Dashboard',
-    tags: ['Analytics', 'Achievements', 'History'],
-    icon: '📈',
+    tags: ['Analytics', 'Roadmap', 'Skill Mastery'],
     href: '#/dashboard'
   }
 ];
@@ -193,7 +167,7 @@ export function createHomeView(params, container) {
 
   function render() {
     const metrics = progress.getMetrics();
-    const categories = ['All', 'DSA', 'Systems', 'Databases', 'Aptitude', 'Career', 'Utility'];
+    const categories = ['All', 'Algorithms', 'Systems & OOP', 'Databases', 'Aptitude', 'Mock Interviews', 'Career Tools'];
 
     const filteredGames = selectedCategory === 'All' 
       ? ARCADE_GAMES 
@@ -201,47 +175,50 @@ export function createHomeView(params, container) {
 
     container.innerHTML = `
       <div class="content-container">
-        <!-- Arcade Hero Panel -->
+        <!-- Modern Product Hero Panel -->
         <section class="hero-arcade-panel" aria-labelledby="hero-title">
           <div class="hero-copy">
-            <span class="badge badge-accent" style="margin-bottom: var(--space-xs);">Unified Placement Preparation Cabinet</span>
-            <h1 id="hero-title">Technical Interview Practice Without the Slop.</h1>
+            <span class="badge badge-accent" style="margin-bottom: var(--space-xs);">Interactive Interview Preparation</span>
+            <h1 id="hero-title">Master Technical Interviews with Interactive Practice</h1>
             <p>
-              Twelve interactive practice chambers connecting initial diagnostic calibration, targeted role tracks, algorithmic mastery, SQL challenges, C++ debugging, behavioral STAR simulations, and deliberate error review.
+              Practice Data Structures, Algorithms, SQL, Systems Programming, and Behavioral interviews with hands-on exercises, instant feedback, and role-targeted roadmaps.
             </p>
             <div style="display: flex; gap: var(--space-xs); flex-wrap: wrap;">
-              <a href="#/assessment" class="btn btn-primary btn-lg">Calibrate Skills (3 min) ➔</a>
-              <a href="#/interview" class="btn btn-subtle btn-lg">Interview Simulator</a>
+              <a href="#/assessment" class="btn btn-primary btn-lg">Start Diagnostic Test (3 min) ➔</a>
+              <a href="#/interview" class="btn btn-subtle btn-lg">Mock Interviews</a>
               <a href="#/dashboard" class="btn btn-subtle btn-lg">View Roadmap</a>
             </div>
           </div>
 
-          <!-- Handcrafted SVG Arcade Machine -->
-          <div class="hero-cabinet-graphic">
-            <svg viewBox="0 0 160 180" width="140" height="155" xmlns="http://www.w3.org/2000/svg">
-              <!-- Cabinet Body -->
-              <rect x="25" y="10" width="110" height="160" rx="8" fill="#1C1917"/>
-              <rect x="32" y="18" width="96" height="30" rx="4" fill="#E05626"/>
-              <text x="80" y="38" font-family="monospace" font-size="12" font-weight="bold" fill="#FFFFFF" text-anchor="middle">ARCADE</text>
-              
-              <!-- CRT Screen -->
-              <rect x="35" y="55" width="90" height="65" rx="6" fill="#1A1A1E" stroke="#57534E" stroke-width="2"/>
-              <circle cx="80" cy="85" r="14" fill="#15803D" opacity="0.8"/>
-              <line x1="50" y1="85" x2="110" y2="85" stroke="#FBF9F5" stroke-width="2"/>
-              <line x1="80" y1="65" x2="80" y2="105" stroke="#FBF9F5" stroke-width="2"/>
-              
-              <!-- Control Deck -->
-              <rect x="30" y="125" width="100" height="35" rx="4" fill="#292524"/>
-              <!-- Joystick -->
-              <line x1="55" y1="145" x2="55" y2="135" stroke="#78716C" stroke-width="4"/>
-              <circle cx="55" cy="133" r="6" fill="#E05626"/>
-              <!-- Action Buttons -->
-              <circle cx="85" cy="142" r="4" fill="#E05626"/>
-              <circle cx="98" cy="138" r="4" fill="#2563EB"/>
-              <circle cx="111" cy="142" r="4" fill="#15803D"/>
-            </svg>
-            <div style="font-family: var(--font-mono); font-size: var(--font-size-xs); color: var(--color-ink-muted); margin-top: 4px;">
-              Cabinet v2.0 • 12 Chambers
+          <!-- Modern IDE Workstation Card Preview -->
+          <div class="hero-ide-preview" aria-hidden="true">
+            <div class="ide-titlebar">
+              <div class="ide-dots">
+                <span class="ide-dot red"></span>
+                <span class="ide-dot yellow"></span>
+                <span class="ide-dot green"></span>
+              </div>
+              <div class="ide-tab">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                <span>two_sum.py</span>
+              </div>
+              <span class="ide-lang">Python 3.11</span>
+            </div>
+            <div class="ide-code-body">
+              <div class="code-line"><span class="token-keyword">def</span> <span class="token-fn">two_sum</span>(nums: List[int], target: int):</div>
+              <div class="code-line indent"><span class="token-var">seen</span> = {}</div>
+              <div class="code-line indent"><span class="token-keyword">for</span> i, val <span class="token-keyword">in</span> enumerate(nums):</div>
+              <div class="code-line indent-2"><span class="token-var">diff</span> = target - val</div>
+              <div class="code-line indent-2"><span class="token-keyword">if</span> diff <span class="token-keyword">in</span> seen:</div>
+              <div class="code-line indent-3"><span class="token-keyword">return</span> [seen[diff], i]</div>
+              <div class="code-line indent-2">seen[val] = i</div>
+            </div>
+            <div class="ide-output-strip">
+              <span class="ide-status-badge">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                All Tests Passed (15/15)
+              </span>
+              <span class="ide-metric">0.8 ms • O(N) Time</span>
             </div>
           </div>
         </section>
@@ -254,24 +231,21 @@ export function createHomeView(params, container) {
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
               </div>
               <div>
-                <strong style="font-size: var(--font-size-sm); color: var(--color-ink);">Welcome Back! Active Sessions in Progress</strong>
+                <strong style="font-size: var(--font-size-sm); color: var(--color-ink);">Welcome Back! Pick up where you left off</strong>
                 <div style="font-size: var(--font-size-xs); color: var(--color-ink-muted);">
                   ${metrics.totalSessions} sessions logged • ${metrics.overallAccuracy}% verified accuracy • ${metrics.totalCorrect} questions solved
                 </div>
               </div>
             </div>
             <a href="#/dashboard" class="btn btn-sm btn-primary">
-              <span>Open Roadmap</span>
+              <span>View Learning Roadmap</span>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
             </a>
           </div>
         ` : ''}
 
-        <!-- Filter Bar -->
-        <div class="filter-bar" role="toolbar" aria-label="Game Category Filters">
-          <span style="font-size: var(--font-size-xs); font-weight: bold; margin-right: var(--space-2xs); color: var(--color-ink-muted);">
-            TOPICS:
-          </span>
+        <!-- Category Filter Bar -->
+        <div class="filter-bar" role="toolbar" aria-label="Topic Filters">
           ${categories.map(cat => `
             <button type="button" class="filter-chip ${selectedCategory === cat ? 'active' : ''}" data-cat="${cat}">
               ${cat}
@@ -279,14 +253,14 @@ export function createHomeView(params, container) {
           `).join('')}
         </div>
 
-        <!-- 10 Game Mini-Modules Grid -->
-        <div class="grid-cards" role="region" aria-label="Interactive Game Chambers">
+        <!-- Problems & Challenges Grid -->
+        <div class="grid-cards" role="region" aria-label="Interactive Challenges">
           ${filteredGames.map(game => `
             <div class="card card-interactive" onclick="window.location.hash='${game.href.replace('#', '')}'" tabindex="0" role="link" aria-label="${game.title}">
               <div class="game-card-hub">
                 <div>
                   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-xs);">
-                    <span class="badge badge-accent">No. ${game.number}</span>
+                    <span class="badge badge-accent">${game.category}</span>
                     <div class="game-card-icon" aria-hidden="true">${getChamberSvg(game.id)}</div>
                   </div>
                   <h3>${game.title}</h3>
@@ -296,7 +270,7 @@ export function createHomeView(params, container) {
                 <div style="margin-top: var(--space-md); border-top: var(--border-width-sm) solid var(--color-border-subtle); padding-top: var(--space-xs); display: flex; justify-content: space-between; align-items: center;">
                   <span class="badge badge-subtle">${game.difficulty}</span>
                   <span style="font-size: var(--font-size-xs); font-weight: bold; color: var(--color-accent); display: flex; align-items: center; gap: 4px;">
-                    Enter
+                    Solve Challenge
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                   </span>
                 </div>

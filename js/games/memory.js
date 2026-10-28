@@ -77,7 +77,7 @@ export function createMemoryView(params, container) {
           <!-- Game Header -->
           <div class="game-header-bar">
             <div class="game-title-group">
-              <span class="badge badge-accent">Game 02</span>
+              <span class="badge badge-accent">Computer Science</span>
               <h2>Technical Memory Match</h2>
             </div>
             <div class="game-controls-bar">

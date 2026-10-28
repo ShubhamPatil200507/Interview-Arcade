@@ -33,8 +33,8 @@ export function createFeedbackView(params, container) {
           <!-- Header -->
           <div class="game-header-bar">
             <div class="game-title-group">
-              <span class="badge badge-accent">Module 09</span>
-              <h2>Local Feedback Chamber</h2>
+              <span class="badge badge-accent">Help & Feedback</span>
+              <h2>Platform Feedback & Support</h2>
             </div>
           </div>
 

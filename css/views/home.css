@@ -1,6 +1,6 @@
 /* ==========================================================================
-   Interview Arcade — Arcade Hub / Home Styles
-   Editorial Placement Preparation Platform
+   Interview Arcade — Practice Hub / Home Styles
+   Editorial Technical Interview Preparation Platform
    ========================================================================== */
 
 .hero-arcade-panel {
@@ -12,12 +12,12 @@
   margin-bottom: var(--space-xl);
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
+  gap: var(--space-lg);
   position: relative;
   overflow: hidden;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 900px) {
   .hero-arcade-panel {
     flex-direction: row;
     align-items: center;
@@ -34,8 +34,9 @@
   font-size: var(--font-size-2xl);
   letter-spacing: -0.025em;
   margin-bottom: var(--space-xs);
-  line-height: 1.15;
+  line-height: 1.18;
   font-weight: var(--font-weight-extrabold);
+  color: var(--color-ink);
 }
 
 .hero-copy p {
@@ -45,18 +46,98 @@
   margin-bottom: var(--space-md);
 }
 
-.hero-cabinet-graphic {
-  background-color: var(--color-bg-subtle);
-  border: var(--border-width-sm) solid var(--color-border);
+/* Modern IDE Workstation Card Preview */
+.hero-ide-preview {
+  background-color: #1A1A1E;
+  border: 1px solid #2D2D35;
   border-radius: var(--radius-md);
-  padding: var(--space-md);
-  box-shadow: var(--shadow-xs);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 220px;
+  min-width: 280px;
+  max-width: 380px;
+  width: 100%;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.25), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
+  font-family: var(--font-mono);
+  overflow: hidden;
 }
 
+.ide-titlebar {
+  background-color: #141417;
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #2D2D35;
+}
+
+.ide-dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ide-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.ide-dot.red { background-color: #EF4444; }
+.ide-dot.yellow { background-color: #F59E0B; }
+.ide-dot.green { background-color: #10B981; }
+
+.ide-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.725rem;
+  color: #D1D5DB;
+  font-weight: 500;
+}
+
+.ide-lang {
+  font-size: 0.65rem;
+  color: #6B7280;
+}
+
+.ide-code-body {
+  padding: 14px 16px;
+  font-size: 0.75rem;
+  line-height: 1.6;
+  color: #E5E7EB;
+}
+
+.code-line.indent { padding-left: 14px; }
+.code-line.indent-2 { padding-left: 28px; }
+.code-line.indent-3 { padding-left: 42px; }
+
+.token-keyword { color: #F472B6; font-weight: 600; }
+.token-fn { color: #60A5FA; font-weight: 600; }
+.token-var { color: #FCD34D; }
+
+.ide-output-strip {
+  background-color: #111114;
+  border-top: 1px solid #26262C;
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.7rem;
+}
+
+.ide-status-badge {
+  color: #4ADE80;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 600;
+}
+
+.ide-metric {
+  color: #9CA3AF;
+  font-size: 0.675rem;
+}
+
+/* Category Filter Tabs */
 .filter-bar {
   display: flex;
   flex-wrap: wrap;
@@ -90,6 +171,7 @@
   box-shadow: 0 1px 3px rgba(28, 25, 23, 0.2);
 }
 
+/* Problem Card */
 .game-card-hub {
   display: flex;
   flex-direction: column;
@@ -102,6 +184,7 @@
   margin-top: var(--space-xs);
   margin-bottom: var(--space-3xs);
   font-weight: var(--font-weight-bold);
+  color: var(--color-ink);
 }
 
 .game-card-hub p {

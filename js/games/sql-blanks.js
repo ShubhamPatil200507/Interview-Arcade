@@ -69,8 +69,8 @@ export function createSQLView(params, container) {
           <!-- Game Header -->
           <div class="game-header-bar">
             <div class="game-title-group">
-              <span class="badge badge-accent">Game 05</span>
-              <h2>SQL Fill in the Blanks</h2>
+              <span class="badge badge-accent">Databases</span>
+              <h2>SQL Query Formulation</h2>
             </div>
             <div class="game-controls-bar">
               <div class="difficulty-selector" role="group" aria-label="Game Difficulty">

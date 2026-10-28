@@ -87,7 +87,7 @@ export function createAptitudeView(params, container) {
           <!-- Game Header -->
           <div class="game-header-bar">
             <div class="game-title-group">
-              <span class="badge badge-accent">Game 03</span>
+              <span class="badge badge-accent">Aptitude & Logic</span>
               <h2>Quantitative Aptitude</h2>
             </div>
             <div class="game-controls-bar">

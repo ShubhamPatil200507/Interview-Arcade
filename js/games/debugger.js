@@ -60,7 +60,7 @@ export function createDebuggerView(params, container) {
           <!-- Game Header -->
           <div class="game-header-bar">
             <div class="game-title-group">
-              <span class="badge badge-accent">Game 08</span>
+              <span class="badge badge-accent">Systems & C++</span>
               <h2>Debug the Code (C++)</h2>
             </div>
             <div class="game-controls-bar">
@@ -147,7 +147,7 @@ export function createDebuggerView(params, container) {
       <div class="content-container">
         <div class="game-frame">
           <div class="game-header-bar">
-            <h2>Debugging Chamber Complete!</h2>
+            <h2>Debugging Challenge Complete!</h2>
             <button type="button" id="play-dbg-again" class="btn btn-primary btn-sm">Play Again</button>
           </div>
 

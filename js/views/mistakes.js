@@ -34,8 +34,8 @@ export function createMistakesView(params, container) {
         <!-- Header -->
         <div class="game-header-bar" style="margin-bottom: var(--space-md);">
           <div class="game-title-group">
-            <span class="badge badge-accent">Pedagogical Review</span>
-            <h2>Mistakes & Error Notebook</h2>
+            <span class="badge badge-accent">Error Analysis</span>
+            <h2>Mistake & Revision Notebook</h2>
           </div>
           <div class="game-controls-bar">
             ${allMistakes.length > 0 ? `
@@ -146,14 +146,14 @@ export function createMistakesView(params, container) {
             </div>
 
             <div class="mistake-explanation-box">
-              <strong>Pedagogical Analysis & Explanation:</strong>
+              <strong>Solution Explanation & Key Takeaway:</strong>
               <div style="margin-top: 4px;">${item.explanation}</div>
             </div>
 
             <div style="display: flex; justify-content: flex-end; margin-top: var(--space-md); gap: var(--space-xs);">
               ${!item.mastered ? `
                 <button type="button" class="btn btn-sm btn-primary mark-mastered-btn" data-id="${item.challengeId}">
-                  ✨ Mark as Understood & Mastered
+                  Mark as Mastered ✓
                 </button>
               ` : `
                 <span style="font-size: var(--font-size-xs); color: var(--color-success); font-weight: bold; align-self: center;">

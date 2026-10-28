@@ -267,9 +267,9 @@ function registerRoutes() {
       default:
         container.innerHTML = `
           <div class="content-container text-center" style="padding: var(--space-3xl) var(--space-md); text-align: center;">
-            <h2>Unknown Arcade Chamber: "${id}"</h2>
-            <p>Please select a valid game from the hub.</p>
-            <a href="#/" class="btn btn-primary" style="margin-top: var(--space-md);">Return to Arcade Hub</a>
+            <h2>Challenge Not Found</h2>
+            <p style="color: var(--color-ink-muted); margin: var(--space-xs) 0 var(--space-md);">The requested problem or challenge "${id}" is not available.</p>
+            <a href="#/" class="btn btn-primary">Browse Practice Problems</a>
           </div>
         `;
         return { destroy: () => {} };

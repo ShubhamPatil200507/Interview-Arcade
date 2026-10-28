@@ -54,8 +54,8 @@ export function createVisualRiddlesView(params, container) {
           <!-- Game Header -->
           <div class="game-header-bar">
             <div class="game-title-group">
-              <span class="badge badge-accent">Game 06</span>
-              <h2>Visual Logic Riddles</h2>
+              <span class="badge badge-accent">Aptitude & Logic</span>
+              <h2>Visual Pattern Recognition</h2>
             </div>
             <div class="game-controls-bar">
               <div class="difficulty-selector" role="group" aria-label="Game Difficulty">

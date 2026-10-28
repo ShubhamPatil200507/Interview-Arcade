@@ -25,8 +25,8 @@ export function createResumeView(params, container) {
           <!-- Game Header -->
           <div class="game-header-bar">
             <div class="game-title-group">
-              <span class="badge badge-accent">Game 04</span>
-              <h2>Resume Keyword Matcher</h2>
+              <span class="badge badge-accent">Career Tools</span>
+              <h2>Resume Keyword Scanner</h2>
             </div>
             <div class="game-controls-bar">
               <button type="button" id="load-sample-btn" class="btn btn-sm btn-subtle">Load Sample Tech Pair</button>

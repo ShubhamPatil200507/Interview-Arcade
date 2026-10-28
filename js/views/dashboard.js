@@ -61,13 +61,13 @@ export function createDashboardView(params, container) {
         <!-- 1. Header Strip: Welcome, Contextual Subtitle, and Track Switcher -->
         <div class="dash-header-strip">
           <div class="dash-welcome-text">
-            <h1>${currentUser ? `Welcome back, ${currentUser.username}` : 'Student Placement Dashboard'}</h1>
+            <h1>${currentUser ? `Welcome back, ${currentUser.username}` : 'Student Learning Dashboard'}</h1>
             <div class="dash-context-subtitle">
               <span>Track: <strong>${roleTitles[activeRole] || activeRole.toUpperCase()}</strong></span>
               <span>•</span>
               <span>Stage 1: Core Technical Foundations</span>
               <span>•</span>
-              <span>${Object.keys(metrics.gameStats).length} of 12 chambers attempted</span>
+              <span>${Object.keys(metrics.gameStats).length} of 12 topics practiced</span>
               ${currentUser ? `<span class="badge badge-accent">Lvl ${currentUser.level} (${currentUser.xp} XP)</span>` : '<span class="badge badge-subtle">Local Mode</span>'}
             </div>
           </div>
@@ -109,8 +109,8 @@ export function createDashboardView(params, container) {
           <!-- Right: Mistakes Notebook Spotlight -->
           <div class="dash-section" style="margin-bottom: 0;">
             <div class="dash-section-header">
-              <h2>Mistakes Notebook</h2>
-              <span class="dash-section-sub">Deliberate Practice</span>
+              <h2>Mistake Notebook</h2>
+              <span class="dash-section-sub">Targeted Revision</span>
             </div>
             <div class="mistakes-spotlight-card">
               <div>
@@ -123,17 +123,17 @@ export function createDashboardView(params, container) {
                   </span>
                 </div>
                 <h3 style="font-size: var(--font-size-base); margin-bottom: var(--space-3xs); font-weight: var(--font-weight-bold);">
-                  ${mistakeStats.pendingCount > 0 ? 'Retest Incorrect Concepts' : 'Error Notebook Clear'}
+                  ${mistakeStats.pendingCount > 0 ? 'Review Incorrect Solutions' : 'Notebook Clean'}
                 </h3>
                 <p style="font-size: var(--font-size-xs); color: var(--color-ink-muted); line-height: 1.5; margin: 0;">
                   ${mistakeStats.pendingCount > 0 
-                    ? 'Every question missed during quiz rounds is automatically indexed here with detailed explanations. Retest missed items to eliminate recurring patterns.' 
-                    : 'Great consistency! Whenever you miss a question during practice chambers or assessments, it appears here for deliberate retesting.'}
+                    ? 'Questions you answered incorrectly are indexed here with complete explanations. Retry them to eliminate gaps before real interviews.' 
+                    : 'Great accuracy! Whenever you answer incorrectly during practice rounds or assessments, it appears here for targeted review.'}
                 </p>
               </div>
 
               <div style="border-top: 1px solid var(--color-border-subtle); padding-top: var(--space-sm); display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-size: var(--font-size-xs); color: var(--color-ink-faint);">Notebook v1.2</span>
+                <span style="font-size: var(--font-size-xs); color: var(--color-ink-faint);">Saved Mistakes</span>
                 <a href="#/mistakes" class="btn btn-sm btn-primary">
                   <span>Open Notebook</span>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
@@ -203,16 +203,16 @@ export function createDashboardView(params, container) {
               <span class="next-action-tag">RECOMMENDED NEXT ACTION</span>
               <span class="badge badge-easy">TIMED 3 MIN</span>
             </div>
-            <h2 class="next-action-title">First Priority: Calibrate Placement Baseline</h2>
+            <h2 class="next-action-title">Initial Assessment: 3-Minute Skill Evaluation</h2>
             <p class="next-action-reason">
-              Take the rapid 3-minute diagnostic assessment to calibrate empirical baseline scores across Object-Oriented Design, SQL, Data Structures, Systems, and Aptitude.
+              Take the 3-minute diagnostic assessment to evaluate your current baseline across Object-Oriented Design, SQL, Data Structures, Systems, and Aptitude.
             </p>
             <div class="next-action-meta">
               <span>Domain: Core CS Foundations</span>
               <span>•</span>
               <span>Est. Duration: ~3 minutes</span>
               <span>•</span>
-              <span>Adapts your customized roadmap</span>
+              <span>Personalizes your preparation roadmap</span>
             </div>
           </div>
           <div class="next-action-cta-wrap">
@@ -225,7 +225,7 @@ export function createDashboardView(params, container) {
       `;
     }
 
-    const title = rec?.game_title || 'SQL Fill in the Blanks';
+    const title = rec?.game_title || 'SQL Query Challenges';
     const difficulty = (rec?.recommended_difficulty || 'medium').toUpperCase();
     const reason = rec?.reason || 'Identified as having the highest impact for your selected career track.';
     const gameId = rec?.top_priority_game || 'sql';
@@ -234,22 +234,22 @@ export function createDashboardView(params, container) {
       <div class="dash-next-action-hero">
         <div class="next-action-main">
           <div class="next-action-eyebrow">
-            <span class="next-action-tag">PRIORITY NEXT STEP</span>
+            <span class="next-action-tag">RECOMMENDED NEXT ACTION</span>
             <span class="badge ${difficulty === 'HARD' ? 'badge-hard' : difficulty === 'MEDIUM' ? 'badge-medium' : 'badge-easy'}">${difficulty}</span>
           </div>
-          <h2 class="next-action-title">Continue: ${title}</h2>
+          <h2 class="next-action-title">Next Recommended: ${title}</h2>
           <p class="next-action-reason">${reason}</p>
           <div class="next-action-meta">
             <span>Target Track: ${activeRole.toUpperCase()}</span>
             <span>•</span>
             <span>Est. Duration: ~5 minutes</span>
             <span>•</span>
-            <span>Awards verified XP & skill evidence</span>
+            <span>Boosts skill rating and roadmap progress</span>
           </div>
         </div>
         <div class="next-action-cta-wrap">
           <a href="#/game/${gameId}" class="btn btn-primary btn-lg">
-            <span>Start Next Challenge</span>
+            <span>Start Practice Challenge</span>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
           </a>
         </div>
@@ -328,10 +328,10 @@ export function createDashboardView(params, container) {
         <div class="dash-section-header">
           <div>
             <h2>Skills Needing Attention</h2>
-            <span class="dash-section-sub">Bayesian confidence calculation based on verified questions attempted</span>
+            <span class="dash-section-sub">Proficiency calculated from verified problem attempts and accuracy</span>
           </div>
           <span style="font-size: var(--font-size-xs); color: var(--color-ink-faint); font-family: var(--font-mono);">
-            Formula: min(100, Accuracy × min(1.0, Questions / 5))
+            Progress reflects accuracy and completion count
           </span>
         </div>
 
@@ -424,8 +424,8 @@ export function createDashboardView(params, container) {
       <div class="dash-section">
         <div class="dash-section-header">
           <div>
-            <h2>Placement Preparation Roadmap</h2>
-            <span class="dash-section-sub">Sequential milestone pathway tailored for your target track</span>
+            <h2>Learning Roadmap</h2>
+            <span class="dash-section-sub">Structured milestone pathway for your chosen target track</span>
           </div>
           <span class="badge badge-accent">${activeRole.toUpperCase()} TRACK</span>
         </div>
@@ -479,7 +479,7 @@ export function createDashboardView(params, container) {
           <thead>
             <tr>
               <th>Time</th>
-              <th>Chamber</th>
+              <th>Challenge</th>
               <th>Difficulty</th>
               <th>Score</th>
               <th>Correct</th>

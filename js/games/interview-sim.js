@@ -88,8 +88,8 @@ export function createInterviewView(params, container) {
         <!-- Header Bar -->
         <div class="game-header-bar" style="margin-bottom: var(--space-md);">
           <div class="game-title-group">
-            <span class="badge badge-accent">Chamber 11</span>
-            <h2>Placement Interview Simulator</h2>
+            <span class="badge badge-accent">Mock Interview</span>
+            <h2>Behavioral & System Design Simulator</h2>
           </div>
           <div class="game-controls-bar">
             <span id="scenario-timer" class="badge" aria-label="Time Remaining">⏱️ 2:00</span>
@@ -281,8 +281,8 @@ export function createInterviewView(params, container) {
             ${chosenOption ? chosenOption.critique : 'Time expired before response was submitted.'}
           </p>
 
-          <div style="background: var(--color-canvas); padding: var(--space-md); border-radius: var(--radius-sm); margin-bottom: var(--space-md); border: 1px solid var(--color-ink);">
-            <strong>Interview Takeaway & Pedagogical Logic:</strong>
+          <div style="background: var(--color-bg-subtle); padding: var(--space-md); border-radius: var(--radius-sm); margin-bottom: var(--space-md); border: 1px solid var(--color-border);">
+            <strong>Interview Strategy & Key Takeaways:</strong>
             <p style="margin-top: 4px; font-size: var(--font-size-sm);">${scenario.explanation}</p>
           </div>
 
@@ -385,9 +385,9 @@ export function createInterviewView(params, container) {
 
           ${loggedMistakes.length > 0 ? `
             <div style="background: rgba(224, 86, 38, 0.08); border: 1px solid var(--color-accent); border-radius: var(--radius-sm); padding: var(--space-md); margin-bottom: var(--space-lg); text-align: left;">
-              <strong>📝 ${loggedMistakes.length} Pedagogical Review Items Saved</strong>
+              <strong>📝 ${loggedMistakes.length} Review Items Saved</strong>
               <p style="font-size: var(--font-size-sm); margin-top: 4px;">
-                Your suboptimal choices have been cataloged in your <strong>Mistakes Notebook</strong> so you can retest concepts and strengthen your interview responses.
+                Your suboptimal choices have been cataloged in your <strong>Mistake Notebook</strong> so you can retest concepts and strengthen your interview responses.
               </p>
             </div>
           ` : `

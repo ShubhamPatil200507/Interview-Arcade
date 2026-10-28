@@ -10,7 +10,7 @@ export function createAboutView(params, container) {
         <div class="game-frame" style="max-width: var(--max-width-text);">
           <div class="game-header-bar">
             <h2>About Interview Arcade</h2>
-            <span class="badge badge-accent">Architecture & Philosophy</span>
+            <span class="badge badge-accent">Platform Overview</span>
           </div>
 
           <div class="card" style="margin-top: var(--space-md); gap: var(--space-md);">
@@ -51,7 +51,7 @@ export function createAboutView(params, container) {
             </div>
 
             <div style="text-align: center; margin-top: var(--space-sm);">
-              <a href="#/" class="btn btn-primary">Return to Arcade Hub</a>
+              <a href="#/" class="btn btn-primary">Browse Practice Problems</a>
             </div>
           </div>
         </div>

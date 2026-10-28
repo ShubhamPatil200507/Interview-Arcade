@@ -32,7 +32,7 @@ export function createTicTacToeView(params, container) {
           <!-- Game Header -->
           <div class="game-header-bar">
             <div class="game-title-group">
-              <span class="badge badge-accent">Game 01</span>
+              <span class="badge badge-accent">Object-Oriented Design</span>
               <h2>Tic Tac Toe + OOP Quiz</h2>
             </div>
             <div class="game-controls-bar">

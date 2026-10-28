@@ -15,45 +15,45 @@ const ACHIEVEMENTS_KEY = 'arcade_achievements';
 export const ACHIEVEMENT_DEFINITIONS = [
   {
     id: 'first_coin',
-    title: 'Inserted First Coin',
-    description: 'Completed your very first mini-game session.',
-    icon: '🪙'
+    title: 'First Problem Solved',
+    description: 'Completed your very first practice session.',
+    icon: '🎯'
   },
   {
     id: 'streak_5',
-    title: 'Arcade Regular',
-    description: 'Completed 5 game sessions across any categories.',
-    icon: '🕹️'
+    title: 'Consistent Learner',
+    description: 'Completed 5 problem sessions across technical categories.',
+    icon: '⚡'
   },
   {
     id: 'perfect_run',
-    title: 'Flawless Strategy',
-    description: 'Achieved 100% accuracy in any quiz challenge.',
+    title: 'Flawless Session',
+    description: 'Achieved 100% accuracy in a challenge round.',
     icon: '✨'
   },
   {
     id: 'dsa_tactician',
-    title: 'Big-O Tactician',
-    description: 'Scored 80% or higher in DSA Match the Following.',
+    title: 'Algorithms Practitioner',
+    description: 'Demonstrated 80%+ accuracy in Data Structures & Big-O.',
     icon: '📊'
   },
   {
     id: 'sql_master',
-    title: 'Query Commander',
-    description: 'Successfully completed the SQL Query challenge.',
+    title: 'SQL Specialist',
+    description: 'Successfully formulated and solved SQL query challenges.',
     icon: '🗄️'
   },
   {
     id: 'bug_hunter',
-    title: 'Code Surgeon',
-    description: 'Identified and fixed all bugs in a C++ Debugging session.',
-    icon: '🐛'
+    title: 'Systems Debugger',
+    description: 'Identified and resolved all memory and pointer defects in C++.',
+    icon: '🔍'
   },
   {
     id: 'all_rounder',
-    title: 'Full Stack Gamer',
-    description: 'Completed sessions in at least 5 different mini-game modules.',
-    icon: '🎖️'
+    title: 'Multi-Domain Explorer',
+    description: 'Completed practice challenges across 5 different technical domains.',
+    icon: '🏆'
   }
 ];
 

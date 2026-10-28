@@ -105,33 +105,33 @@ class Router {
   _updateNavLinks(currentPath) {
     // Route label dictionary for topbar breadcrumb
     const routeTitles = {
-      '/': 'Practice Chambers',
-      '/arcade': 'Practice Chambers',
+      '/': 'Practice Problems',
+      '/arcade': 'Practice Problems',
       '/dashboard': 'Dashboard & Roadmap',
-      '/assessment': 'Diagnostic Test',
-      '/interview': 'Interview Simulator',
-      '/mistakes': 'Mistakes Notebook',
-      '/resume': 'Resume Lens',
-      '/feedback': 'Feedback Chamber',
-      '/about': 'Architecture & Rules',
-      '/game/tictactoe': 'Tic Tac Toe + OOP Quiz',
-      '/game/memory': 'Technical Memory Match',
+      '/assessment': 'Diagnostic Assessment',
+      '/interview': 'Mock Interviews',
+      '/mistakes': 'Mistake Notebook',
+      '/resume': 'Resume Scanner',
+      '/feedback': 'Feedback & Support',
+      '/about': 'About Platform',
+      '/game/tictactoe': 'Interactive OOP Challenge',
+      '/game/memory': 'Computer Science Terminology',
       '/game/aptitude': 'Quantitative Aptitude',
-      '/game/resume': 'Resume Keyword Matcher',
-      '/game/sql': 'SQL Fill in the Blanks',
-      '/game/riddles': 'Visual Logic Riddles',
-      '/game/dsa': 'DSA Match the Following',
-      '/game/debugger': 'Debug the Code (C++)',
-      '/game/interview': 'Placement Interview Simulator',
-      '/game/assessment': 'Diagnostic Skill Assessment',
-      '/game/mistakes': 'Mistakes Notebook',
-      '/game/feedback': 'Feedback Chamber',
-      '/game/dashboard': 'Progress Log & Analytics'
+      '/game/resume': 'Resume Keyword Scanner',
+      '/game/sql': 'SQL Query Challenges',
+      '/game/riddles': 'Visual Logic Puzzles',
+      '/game/dsa': 'Data Structures & Big-O',
+      '/game/debugger': 'C++ Systems Debugger',
+      '/game/interview': 'Behavioral & System Design Mock',
+      '/game/assessment': 'Diagnostic Assessment',
+      '/game/mistakes': 'Mistake Notebook',
+      '/game/feedback': 'Feedback & Support',
+      '/game/dashboard': 'Dashboard & Roadmap'
     };
 
     const breadcrumbElem = document.getElementById('breadcrumb-current');
     if (breadcrumbElem) {
-      breadcrumbElem.textContent = routeTitles[currentPath] || 'Practice Chamber';
+      breadcrumbElem.textContent = routeTitles[currentPath] || 'Practice Challenge';
     }
 
     // Auto-close mobile drawer on navigation
@@ -159,10 +159,10 @@ class Router {
     if (!this.viewContainer) return;
     this.viewContainer.innerHTML = `
       <div class="content-container text-center" style="padding: var(--space-3xl) var(--space-md); text-align: center;">
-        <span style="font-size: 3rem;">🕹️</span>
-        <h1 style="margin: var(--space-sm) 0;">404 — Chamber Not Found</h1>
-        <p style="max-width: 480px; margin: 0 auto var(--space-lg);">The arcade game or page you're searching for does not exist in this cabinet.</p>
-        <a href="#/" class="btn btn-primary">Return to Arcade Hub</a>
+        <div style="font-size: 2.5rem; margin-bottom: var(--space-sm); color: var(--color-ink-faint);">404</div>
+        <h1 style="margin: var(--space-sm) 0;">Page Not Found</h1>
+        <p style="max-width: 480px; margin: 0 auto var(--space-lg); color: var(--color-ink-muted);">The problem or challenge page you are looking for does not exist or has moved.</p>
+        <a href="#/" class="btn btn-primary">Browse Practice Problems</a>
       </div>
     `;
   }
@@ -171,11 +171,11 @@ class Router {
     if (!this.viewContainer) return;
     this.viewContainer.innerHTML = `
       <div class="content-container text-center" style="padding: var(--space-3xl) var(--space-md); text-align: center;">
-        <span style="font-size: 3rem;">⚠️</span>
+        <div style="font-size: 2.5rem; margin-bottom: var(--space-sm); color: var(--color-warning);">⚠️</div>
         <h1 style="margin: var(--space-sm) 0;">System Interruption</h1>
-        <p style="max-width: 480px; margin: 0 auto var(--space-md);">${message}</p>
-        <pre style="max-width: 600px; margin: 0 auto var(--space-lg); text-align: left; font-size: var(--font-size-xs);">${error?.message || 'Unknown error'}</pre>
-        <a href="#/" class="btn btn-primary">Return to Safety</a>
+        <p style="max-width: 480px; margin: 0 auto var(--space-md); color: var(--color-ink-muted);">${message}</p>
+        <pre style="max-width: 600px; margin: 0 auto var(--space-lg); text-align: left; font-size: var(--font-size-xs); background: var(--color-bg-subtle); padding: var(--space-sm); border-radius: var(--radius-sm);">${error?.message || 'Unknown error'}</pre>
+        <a href="#/" class="btn btn-primary">Return to Practice Problems</a>
       </div>
     `;
   }

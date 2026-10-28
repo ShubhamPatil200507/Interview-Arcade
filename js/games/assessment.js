@@ -102,8 +102,8 @@ export function createAssessmentView(params, container) {
         <!-- Header Bar -->
         <div class="game-header-bar" style="margin-bottom: var(--space-sm);">
           <div class="game-title-group">
-            <span class="badge badge-accent">Diagnostic Calibration</span>
-            <h2>Skill Assessment & Role Placement</h2>
+            <span class="badge badge-accent">Evaluation</span>
+            <h2>Diagnostic Skill Assessment</h2>
           </div>
           <div class="game-controls-bar">
             <span id="diag-timer" class="badge" aria-label="Time Remaining">⏱️ 3:00</span>

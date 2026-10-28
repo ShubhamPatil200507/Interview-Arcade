@@ -162,7 +162,7 @@ class RecommendationService:
         return RecommendationResponse(
             top_priority_game=rec_game,
             game_title=rec_title,
-            reason=f"Your current {SKILL_DISPLAY_NAMES.get(lowest_skill, lowest_skill)} evidence is at {lowest_score}%. Practice this chamber to strengthen your {path.target_role_title} readiness.",
+            reason=f"Your current {SKILL_DISPLAY_NAMES.get(lowest_skill, lowest_skill)} proficiency is at {lowest_score}%. Practice this challenge to strengthen your {path.target_role_title} readiness.",
             recommended_difficulty=rec_diff,
             weak_skills=weak_skills
         )

@@ -122,3 +122,63 @@ def test_ai_exemplar_endpoint(client):
     assert data["scenario_id"] == "beh_1"
     assert "Situation:" in data["exemplar_text"]
     assert len(data["key_tradeoffs"]) >= 2
+
+
+def test_ai_evaluation_unicode_and_special_characters(client):
+    """Evaluation must gracefully handle smart quotes, em-dashes, and unicode mathematical symbols."""
+    payload = {
+        "scenario_id": "beh_1",
+        "scenario_title": "Architectural Disagreement with Senior Colleague",
+        "scenario_type": "behavioral",
+        "prompt": "Tell me about a time you disagreed with a colleague on an architectural decision.",
+        "user_response": (
+            "Situation: During our “billing migration” — an event-driven Kafka vs gRPC debate — we faced latency regression.\n"
+            "Task: My goal was to resolve the deadlock: latency ≤ 50ms & 99.9% availability.\n"
+            "Action: I developed a prototype using k6 to benchmark 45k RPS and authored an ADR comparing trade-offs.\n"
+            "Result: The team adopted Kafka → latency reduced by 40% with zero Sev-1 incidents!"
+        )
+    }
+
+    response = client.post("/api/ai/evaluate", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["overall_score"] >= 70
+    assert len(data["strengths"]) >= 1
+
+
+def test_ai_evaluation_empty_validation_guard(client):
+    """Submitting empty string should trigger strict schema validation (HTTP 422)."""
+    payload = {
+        "scenario_id": "beh_1",
+        "scenario_title": "Architectural Disagreement",
+        "scenario_type": "behavioral",
+        "prompt": "Tell me about a time you disagreed with a colleague.",
+        "user_response": ""  # Violates min_length=1
+    }
+
+    response = client.post("/api/ai/evaluate", json=payload)
+    assert response.status_code == 422
+
+
+def test_ai_evaluation_unknown_scenario_graceful_fallback(client):
+    """Evaluating a scenario ID not in benchmark bank should dynamically generate fallback rubric feedback."""
+    payload = {
+        "scenario_id": "custom_question_999",
+        "scenario_title": "Custom Distributed Cache Design",
+        "scenario_type": "system_design",
+        "prompt": "How do you handle cache invalidation in a multi-region deployment?",
+        "user_response": (
+            "Architecture: We deploy an invalidation bus using Kafka topics spanning both AWS regions. "
+            "When a write mutates the primary Postgres database, an outbox pattern publisher pushes a cache eviction event. "
+            "Trade-off: This favors eventual consistency over synchronous two-phase commit."
+        )
+    }
+
+    response = client.post("/api/ai/evaluate", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["scenario_id"] == "custom_question_999"
+    assert data["overall_score"] >= 50
+    assert len(data["strengths"]) >= 1
+    assert "exemplar_answer" in data
+

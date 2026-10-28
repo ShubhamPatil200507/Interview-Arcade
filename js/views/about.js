@@ -36,7 +36,7 @@ export function createAboutView(params, container) {
               <ul style="margin-left: var(--space-lg); font-size: var(--font-size-sm); color: var(--color-ink);">
                 <li><strong>Warm Indie Arcade Visual Identity:</strong> High-contrast charcoal ink, warm off-white surfaces, and tactile button offsets inspired by classic mechanical instruments and physical card decks.</li>
                 <li><strong>Zero Fake Metrics:</strong> If you haven't played, the dashboard displays 0 sessions. Every accuracy percentage is calculated from real user selections.</li>
-                <li><strong>Complete Privacy:</strong> Zero telemetry, zero analytics tracking, and zero cloud uploads. Your resume text and session logs remain 100% in your local browser storage.</li>
+                <li><strong>Complete Privacy:</strong> Zero telemetry, zero analytics tracking, and zero unneeded cloud uploads. Your practice progress and session logs remain secure and isolated.</li>
                 <li><strong>Pure Vanilla Architecture:</strong> Zero megabytes of heavy frontend framework bloat. Handcrafted semantic HTML5, CSS3 variables, and vanilla modern JavaScript modules.</li>
               </ul>
             </div>

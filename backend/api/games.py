@@ -46,7 +46,9 @@ def submit_challenge_answers(
     # 2. Server-Side Answer Verification (Never trust client scores)
     verified_results, correct_count, total_count, primary_skill, skill_breakdown = scoring_engine.verify_answers(
         payload.game_id,
-        payload.answers
+        payload.answers,
+        db=db,
+        user_id=current_user.id if current_user else None
     )
 
     # 3. Calculate true score & XP

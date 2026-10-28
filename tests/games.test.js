@@ -1,9 +1,7 @@
 /**
  * Interview Arcade — Game Logic Automated Tests
- * Tests algorithmic components: TicTacToe win evaluation, Resume tokenization, and DSA matching.
+ * Tests algorithmic components: TicTacToe win evaluation, SQL token normalization, and diagnostic calibration.
  */
-
-import { SKILL_CATEGORIES } from '../js/data/resume-dictionaries.js';
 
 export function runGameLogicTests(assert) {
   // 1. Tic Tac Toe Win Detection Logic
@@ -37,35 +35,16 @@ export function runGameLogicTests(assert) {
     assert.ok(drawBoard.every(c => c !== null), 'Identifies draw when board is full and no winner');
   });
 
-  // 2. Resume Keyword Matcher Logic
-  assert.describe('Resume Matcher Keyword Tokenizer', () => {
-    function matchSkills(text, dictionary) {
-      const lower = text.toLowerCase();
-      const matched = [];
-      dictionary.forEach(skill => {
-        const escaped = skill.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        const regex = /[\W_]$/.test(skill)
-          ? new RegExp(`(?:^|[\\s,.;:!?/()])${escaped}(?=[\\s,.;:!?/()]|$)`, 'i')
-          : new RegExp(`\\b${escaped}\\b`, 'i');
-        if (regex.test(lower)) {
-          matched.push(skill);
-        }
-      });
-      return matched;
+  // 2. SQL Token Verification Logic
+  assert.describe('SQL Token Normalization Logic', () => {
+    function normalizeToken(token) {
+      return (token || '').trim().toUpperCase();
     }
-
-    const sampleText = 'Experienced in Python, C++, and PostgreSQL with Docker deployment and Git.';
-    const languages = SKILL_CATEGORIES.languages;
-    const matchedLangs = matchSkills(sampleText, languages);
-
-    assert.ok(matchedLangs.includes('python'), 'Matches "python"');
-    assert.ok(matchedLangs.includes('c++'), 'Matches "c++" with special symbols');
-    assert.ok(!matchedLangs.includes('java'), 'Does not match absent language "java"');
-
-    const dbs = SKILL_CATEGORIES.databases;
-    const matchedDBs = matchSkills(sampleText, dbs);
-    assert.ok(matchedDBs.includes('postgresql'), 'Matches "postgresql"');
-    assert.ok(!matchedDBs.includes('mongodb'), 'Does not match absent database "mongodb"');
+    assert.equal(normalizeToken('  and  '), 'AND', 'Normalizes whitespace and casing for AND');
+    assert.equal(normalizeToken('having'), 'HAVING', 'Normalizes HAVING keyword');
+    assert.equal(normalizeToken('LIMIT'), 'LIMIT', 'Preserves clean LIMIT keyword');
+    assert.equal(normalizeToken(''), '', 'Handles empty token safely');
+    assert.equal(normalizeToken(null), '', 'Handles null token safely');
   });
 
   // 3. Interview Evaluation & STAR Grading Logic

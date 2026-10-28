@@ -39,7 +39,7 @@ ROLE_ROADMAPS: Dict[str, Dict[str, Any]] = {
             {"step_number": 1, "game_id": "tictactoe", "title": "Tic Tac Toe + OOP Quiz", "target_skill": "oop", "reason": "Build component models and clean architectural decoupling"},
             {"step_number": 2, "game_id": "sql", "title": "SQL Fill in the Blanks", "target_skill": "sql", "reason": "Query database tables efficiently and avoid N+1 query traps"},
             {"step_number": 3, "game_id": "memory", "title": "Technical Memory Match", "target_skill": "systems", "reason": "Recall networking, HTTP, DNS, and operating system terminology"},
-            {"step_number": 4, "game_id": "resume", "title": "Resume Keyword Matcher", "target_skill": "career", "reason": "Audit skill presentation and technical impact verbs"}
+            {"step_number": 4, "game_id": "debugger", "title": "C++ Systems Debugger", "target_skill": "systems", "reason": "Identify memory leaks, pointer defects, and runtime crashes"}
         ]
     },
     "data": {

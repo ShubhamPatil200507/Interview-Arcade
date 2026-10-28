@@ -118,22 +118,6 @@ export function createInterviewView(params, container) {
           <p style="font-weight: bold; font-size: var(--font-size-md); margin-top: var(--space-md); color: var(--color-ink);">
             ${scenario.prompt}
           </p>
-
-          <!-- STAR Rubric Focus Summary -->
-          <div class="star-rubric-summary">
-            <div class="star-pillar-tag">
-              <span class="star-pillar-letter">S</span><strong>Situation:</strong> ${scenario.starRubric.situation.slice(0, 48)}...
-            </div>
-            <div class="star-pillar-tag">
-              <span class="star-pillar-letter">T</span><strong>Task:</strong> ${scenario.starRubric.task.slice(0, 48)}...
-            </div>
-            <div class="star-pillar-tag">
-              <span class="star-pillar-letter">A</span><strong>Action:</strong> ${scenario.starRubric.action.slice(0, 48)}...
-            </div>
-            <div class="star-pillar-tag">
-              <span class="star-pillar-letter">R</span><strong>Result:</strong> ${scenario.starRubric.result.slice(0, 48)}...
-            </div>
-          </div>
         </div>
 
         <!-- Strategic Direction Options -->
@@ -356,7 +340,6 @@ export function createInterviewView(params, container) {
     const feedbackArea = container.querySelector('#scenario-feedback-area');
     if (!feedbackArea) return;
 
-    const rubricItems = Object.entries(aiEval.rubric_scores || {});
     const isLlm = aiEval.evaluation_mode === 'gemini_llm';
 
     feedbackArea.innerHTML = `
@@ -375,21 +358,9 @@ export function createInterviewView(params, container) {
             <span style="font-size: var(--font-size-2xl); font-weight: 900; color: ${aiEval.overall_score >= 70 ? 'var(--color-success)' : 'var(--color-accent)'};">
               ${aiEval.overall_score} / 100
             </span>
-            <div style="font-size: var(--font-size-xs); color: var(--color-ink-muted);">Composite Rubric Score</div>
+            <div style="font-size: var(--font-size-xs); color: var(--color-ink-muted);">Assessment Score</div>
           </div>
         </div>
-
-        <!-- Rubric Pillars Grid -->
-        ${rubricItems.length > 0 ? `
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: var(--space-xs); margin-bottom: var(--space-md); background: var(--color-bg-subtle); padding: var(--space-sm); border-radius: var(--radius-sm); border: 1px solid var(--color-border);">
-            ${rubricItems.map(([pillar, val]) => `
-              <div style="text-align: center; padding: 4px;">
-                <div style="font-size: var(--font-size-xs); color: var(--color-ink-muted); text-transform: uppercase;">${pillar}</div>
-                <div style="font-size: var(--font-size-md); font-weight: bold; color: ${val >= 75 ? 'var(--color-success)' : 'var(--color-ink)'};">${val}%</div>
-              </div>
-            `).join('')}
-          </div>
-        ` : ''}
 
         <!-- Strengths Section -->
         <div style="margin-bottom: var(--space-sm);">

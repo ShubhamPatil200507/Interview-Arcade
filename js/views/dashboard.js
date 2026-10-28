@@ -397,7 +397,7 @@ export function createDashboardView(params, container) {
         { step_number: 2, title: 'SQL Fill in the Blanks', game_id: 'sql', status: 'in_progress', reason: 'Relational query formulation, aggregate filters, and multi-table joins' },
         { step_number: 3, title: 'DSA Match the Following', game_id: 'dsa', status: 'todo', reason: 'Algorithmic time and space Big-O complexity mapping' },
         { step_number: 4, title: 'C++ Systems Debugger', game_id: 'debugger', status: 'todo', reason: 'Dangling pointers, memory leaks, and RAII safety violations' },
-        { step_number: 5, title: 'Placement Interview Simulator', game_id: 'interview', status: 'todo', reason: 'Capstone simulation with STAR behavioral rounds & rubric scoring' }
+        { step_number: 5, title: 'Placement Interview Simulator', game_id: 'interview', status: 'todo', reason: 'Capstone simulation with behavioral scenarios and systems design rounds' }
       ],
       systems: [
         { step_number: 1, title: 'Technical Memory Match', game_id: 'memory', status: 'completed', reason: 'Core architecture and operating systems definitions' },
@@ -409,7 +409,7 @@ export function createDashboardView(params, container) {
       fullstack: [
         { step_number: 1, title: 'Tic Tac Toe + OOP Quiz', game_id: 'tictactoe', status: 'completed', reason: 'Component architecture and state design' },
         { step_number: 2, title: 'SQL Fill in the Blanks', game_id: 'sql', status: 'in_progress', reason: 'Backend relational schema queries and indices' },
-        { step_number: 3, title: 'Resume Keyword Matcher', game_id: 'resume', status: 'todo', reason: 'Audit stack terminology against job descriptions' },
+        { step_number: 3, title: 'C++ Systems Debugger', game_id: 'debugger', status: 'todo', reason: 'Memory leak prevention, pointer safety, and runtime defects' },
         { step_number: 4, title: 'DSA Match the Following', game_id: 'dsa', status: 'todo', reason: 'Client-side and server-side complexity trade-offs' },
         { step_number: 5, title: 'Placement Interview Simulator', game_id: 'interview', status: 'todo', reason: 'End-to-end full stack architecture interview' }
       ],

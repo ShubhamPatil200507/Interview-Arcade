@@ -15,7 +15,6 @@ import { createAboutView } from './views/about.js';
 import { createTicTacToeView } from './games/tictactoe.js';
 import { createMemoryView } from './games/memory.js';
 import { createAptitudeView } from './games/aptitude.js';
-import { createResumeView } from './games/resume-matcher.js';
 import { createSQLView } from './games/sql-blanks.js';
 import { createVisualRiddlesView } from './games/visual-riddles.js';
 import { createDSAMatchView } from './games/dsa-match.js';
@@ -228,7 +227,6 @@ function registerRoutes() {
   router.register('/interview', createInterviewView);
   router.register('/mistakes', createMistakesView);
   router.register('/dashboard', createDashboardView);
-  router.register('/resume', createResumeView);
   router.register('/feedback', createFeedbackView);
   router.register('/about', createAboutView);
 
@@ -236,7 +234,6 @@ function registerRoutes() {
   router.register('/game/tictactoe', createTicTacToeView);
   router.register('/game/memory', createMemoryView);
   router.register('/game/aptitude', createAptitudeView);
-  router.register('/game/resume', createResumeView);
   router.register('/game/sql', createSQLView);
   router.register('/game/riddles', createVisualRiddlesView);
   router.register('/game/dsa', createDSAMatchView);
@@ -254,7 +251,6 @@ function registerRoutes() {
       case 'tictactoe': return createTicTacToeView(params, container);
       case 'memory': return createMemoryView(params, container);
       case 'aptitude': return createAptitudeView(params, container);
-      case 'resume': return createResumeView(params, container);
       case 'sql': return createSQLView(params, container);
       case 'riddles': return createVisualRiddlesView(params, container);
       case 'dsa': return createDSAMatchView(params, container);

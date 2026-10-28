@@ -5,6 +5,8 @@ Never trusts client-submitted scores or claims.
 """
 
 from datetime import datetime, timezone
+import json
+import logging
 from typing import Dict, Any, List, Tuple, Optional
 from sqlalchemy.orm import Session
 
@@ -12,7 +14,10 @@ from backend.models.user import User
 from backend.models.session import GameSession
 from backend.models.mastery import SkillMastery
 from backend.models.achievement import UserAchievement
+from backend.models.question import Question
 from backend.schemas.game import SingleAnswerSubmission, VerifiedAnswerResult
+
+logger = logging.getLogger(__name__)
 
 # Server-Side Master Answer Banks
 SERVER_QUESTION_BANK: Dict[str, Dict[str, Any]] = {
@@ -94,12 +99,17 @@ class ScoringEngine:
     @staticmethod
     def verify_answers(
         game_id: str,
-        answers: List[SingleAnswerSubmission]
+        answers: List[SingleAnswerSubmission],
+        db: Optional[Session] = None,
+        user_id: Optional[int] = None
     ) -> Tuple[List[VerifiedAnswerResult], int, int, str, Dict[str, Dict[str, int]]]:
         """
-        Verifies student submissions against server answer keys.
+        Verifies student submissions against server answer keys and database questions.
+        Records attempts for authenticated users to power repetition elimination.
         Returns: (results_list, correct_count, total_count, primary_skill, skill_breakdown)
         """
+        from backend.services.question_service import QuestionService
+
         results: List[VerifiedAnswerResult] = []
         correct_count = 0
         total_count = len(answers)
@@ -108,44 +118,88 @@ class ScoringEngine:
 
         for ans in answers:
             q_id = ans.challenge_id
-            if q_id not in SERVER_QUESTION_BANK:
-                # Fallback: if dynamic puzzle or untracked ID, give neutral result
+            is_correct = False
+            preview = None
+            explanation = ""
+            s_name = "general"
+
+            if q_id in SERVER_QUESTION_BANK:
+                entry = SERVER_QUESTION_BANK[q_id]
+                s_name = entry.get("skill", "general")
+                primary_skill = s_name
+                if s_name not in skill_breakdown:
+                    skill_breakdown[s_name] = {"attempted": 0, "correct": 0}
+                skill_breakdown[s_name]["attempted"] += 1
+
+                # 1. Multiple-choice check
+                if "correct_index" in entry:
+                    expected_idx = entry["correct_index"]
+                    is_correct = (ans.selected_option_index == expected_idx)
+                    preview = f"Option {chr(65 + expected_idx)}"
+
+                # 2. SQL / Text token check
+                elif "accepted_tokens" in entry:
+                    user_token = (ans.text_answer or "").strip().upper()
+                    accepted = [t.upper() for t in entry["accepted_tokens"]]
+                    is_correct = (user_token in accepted)
+                    preview = accepted[0]
+
+                # 3. Match item check
+                elif "match" in entry:
+                    expected_match = entry["match"].lower()
+                    user_match = (ans.text_answer or "").strip().lower()
+                    is_correct = (user_match == expected_match)
+                    preview = entry["match"]
+
+                explanation = entry.get("explanation", "")
+
+            elif db is not None:
+                # Dynamic question database verification
+                db_q = db.query(Question).filter(Question.id == q_id).first()
+                if db_q:
+                    meta = {}
+                    try:
+                        meta = json.loads(db_q.metadata_json) if db_q.metadata_json else {}
+                    except Exception:
+                        pass
+                    s_name = meta.get("skill", db_q.topic or "general")
+                    primary_skill = s_name
+                    if s_name not in skill_breakdown:
+                        skill_breakdown[s_name] = {"attempted": 0, "correct": 0}
+                    skill_breakdown[s_name]["attempted"] += 1
+
+                    if db_q.question_type in ("mcq", "debug", "scenario"):
+                        try:
+                            expected_idx = int(db_q.correct_answer)
+                            is_correct = (ans.selected_option_index == expected_idx)
+                            preview = f"Option {chr(65 + expected_idx)}" if 0 <= expected_idx < 26 else str(expected_idx)
+                        except (ValueError, TypeError):
+                            is_correct = (str(ans.selected_option_index) == db_q.correct_answer)
+                            preview = db_q.correct_answer
+
+                    elif db_q.question_type == "sql_token":
+                        user_token = (ans.text_answer or "").strip().upper()
+                        accepted = [db_q.correct_answer.strip().upper()]
+                        if "accepted_tokens" in meta and isinstance(meta["accepted_tokens"], list):
+                            accepted.extend([t.strip().upper() for t in meta["accepted_tokens"]])
+                        is_correct = (user_token in accepted)
+                        preview = db_q.correct_answer
+
+                    explanation = db_q.explanation or "Server-validated algorithmic explanation."
+                else:
+                    results.append(VerifiedAnswerResult(
+                        challenge_id=q_id,
+                        is_correct=False,
+                        explanation="Unrecognized server challenge identifier."
+                    ))
+                    continue
+            else:
                 results.append(VerifiedAnswerResult(
                     challenge_id=q_id,
                     is_correct=False,
                     explanation="Unrecognized server challenge identifier."
                 ))
                 continue
-
-            entry = SERVER_QUESTION_BANK[q_id]
-            s_name = entry.get("skill", "general")
-            primary_skill = s_name
-            if s_name not in skill_breakdown:
-                skill_breakdown[s_name] = {"attempted": 0, "correct": 0}
-            skill_breakdown[s_name]["attempted"] += 1
-
-            is_correct = False
-            preview = None
-
-            # 1. Multiple-choice check
-            if "correct_index" in entry:
-                expected_idx = entry["correct_index"]
-                is_correct = (ans.selected_option_index == expected_idx)
-                preview = f"Option {chr(65 + expected_idx)}"
-
-            # 2. SQL / Text token check
-            elif "accepted_tokens" in entry:
-                user_token = (ans.text_answer or "").strip().upper()
-                accepted = [t.upper() for t in entry["accepted_tokens"]]
-                is_correct = (user_token in accepted)
-                preview = accepted[0]
-
-            # 3. Match item check
-            elif "match" in entry:
-                expected_match = entry["match"].lower()
-                user_match = (ans.text_answer or "").strip().lower()
-                is_correct = (user_match == expected_match)
-                preview = entry["match"]
 
             if is_correct:
                 correct_count += 1
@@ -154,9 +208,24 @@ class ScoringEngine:
             results.append(VerifiedAnswerResult(
                 challenge_id=q_id,
                 is_correct=is_correct,
-                explanation=entry.get("explanation", ""),
+                explanation=explanation,
                 correct_answer_preview=preview
             ))
+
+            # Record attempt for authenticated candidate history
+            if db is not None and user_id is not None:
+                selected_val = str(ans.selected_option_index) if ans.selected_option_index is not None else ans.text_answer
+                try:
+                    QuestionService.record_question_attempt(
+                        db=db,
+                        user_id=user_id,
+                        question_id=q_id,
+                        game_id=game_id,
+                        is_correct=is_correct,
+                        selected_option=selected_val
+                    )
+                except Exception as ex:
+                    logger.warning(f"Failed to record question attempt history for user {user_id}: {ex}")
 
         return results, correct_count, total_count, primary_skill, skill_breakdown
 

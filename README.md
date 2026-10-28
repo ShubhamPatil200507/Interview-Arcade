@@ -3,8 +3,8 @@
 > **A handcrafted, full-stack placement preparation platform connecting multi-domain diagnostic calibration, candidate-authored AI rubric evaluation, evidence-based skill gap analysis, personalized learning roadmaps, and streak-tracked daily technical sprints.**
 
 [![Frontend Tests](https://img.shields.io/badge/frontend%20tests-291%20passed%20%2F%200%20failed-15803D?style=flat-square)](tests/)
-[![Backend Tests](https://img.shields.io/badge/backend%20tests-22%20passed%20%2F%200%20failed-15803D?style=flat-square)](backend/tests/)
-[![Total Automated Assertions](https://img.shields.io/badge/automated%20assertions-313%20passed%20%2F%200%20failed-15803D?style=flat-square)](#6-running-automated-tests)
+[![Backend Tests](https://img.shields.io/badge/backend%20tests-25%20passed%20%2F%200%20failed-15803D?style=flat-square)](backend/tests/)
+[![Total Automated Assertions](https://img.shields.io/badge/automated%20assertions-316%20passed%20%2F%200%20failed-15803D?style=flat-square)](#6-running-automated-tests)
 [![AI Engine](https://img.shields.io/badge/AI%20Evaluation-Gemini%201.5%20%2B%20Semantic%20Heuristic%20Fallback-E05626?style=flat-square)](#2-ai-evaluation-engine--methodology)
 [![Architecture](https://img.shields.io/badge/architecture-FastAPI%20%2B%20Vanilla%20ES%20Modules-3730A3?style=flat-square)](#5-architecture--directory-structure)
 [![License](https://img.shields.io/badge/license-MIT-57534E?style=flat-square)](LICENSE)
@@ -164,8 +164,8 @@ Then navigate to `http://localhost:3000`. Progress persists locally in browser s
 ```bash
 python -m pytest backend/tests -v
 ```
-**Result:** **22 passed in ~5.5s (100% Green)**  
-*Covers authentication, cross-user isolation, scoring anti-tamper, duplicate reward prevention, diagnostic calibration, learning path recommendations, and AI evaluation variance.*
+**Result:** **25 passed in ~5.5s (100% Green)**  
+*Covers authentication, cross-user isolation, scoring anti-tamper, duplicate reward prevention, diagnostic calibration, learning path recommendations, AI evaluation variance, special characters/unicode resilience, and schema boundaries.*
 
 ### 2. Frontend Automated Tests (Node.js)
 ```bash
@@ -174,7 +174,7 @@ node tests/run-all.js
 **Result:** **291 passed, 0 failed (100% Green)**  
 *Covers storage, progress deduplication, mistakes notebook, daily sprint streaks, question bank integrity, Minimax AI win detection, and tokenizer logic.*
 
-**Total Verified Automated Assertions:** **313 / 313 Passed (100% Green)**
+**Total Verified Automated Assertions:** **316 / 316 Passed (100% Green)**
 
 ---
 

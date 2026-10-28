@@ -68,3 +68,12 @@ Interview Arcade is a handcrafted, gamified technical interview preparation plat
 - [x] **7.7 Mistakes & Error Notebook (`js/views/mistakes.js`, `css/views/mistakes.css`, `js/services/mistakes.js`)**: Chamber 13 cataloging all missed questions across the platform with pedagogical analysis and interactive retesting.
 - [x] **7.8 Personalized Learning Paths & Recommendations (`backend/services/recommendation_service.py`, `js/views/dashboard.js`)**: Dynamic role roadmap generation (Backend, Systems, Full Stack, Data) with automated weakest-competency recommendations.
 - [x] **7.9 Pytest Automated Backend Test Suite (`backend/tests/`)**: 17 comprehensive automated tests covering auth, security isolation, scoring tamper rejection, idempotency, multi-domain diagnostic calibration, and complete 9-step user integration journey (100% pass rate).
+
+### [x] Phase 8: AI Evaluation Engine, Daily Sprint, & Hackathon Upgrades
+- [x] **8.1 AI Evaluation Service & Router (`backend/services/ai_service.py`, `backend/api/ai.py`)**: Real candidate-written answer evaluation against STAR & system design rubrics with structured output (scores, strengths, omissions, improvement coaching, mentor exemplars). Dual-engine architecture with Gemini 1.5 Flash and 100% offline-reliable deterministic semantic heuristic fallback.
+- [x] **8.2 Candidate Voice in Mock Interview (`js/games/interview-sim.js`)**: Interactive open-ended drafting area allowing candidates to formulate responses, trigger live AI analysis, inspect rubric breakdowns, and explore mentor benchmark exemplars.
+- [x] **8.3 Evidence-Based Skill Gap Analysis (`js/games/assessment.js`)**: Assessment report card explaining exact gaps using submitted answer evidence with direct one-click CTA to recommended practice.
+- [x] **8.4 Daily Technical Sprint & Honest Streaks (`js/services/daily-sprint.js`, `js/views/dashboard.js`)**: Calendar-seeded daily placement challenge with 60s timer, instant scoring, and streak counter.
+- [x] **8.5 AI Engine Benchmark Report (`AI_EVALUATION.md`)**: Documented multi-tier evaluation variance across strong (92%), borderline (68%), weak (41%), and trivial (10%) responses.
+- [x] **8.6 Hackathon Pitch Script (`DEMO_SCRIPT.md`)**: 3-4 minute presentation narrative with step-by-step click path, demo account credentials, and judge Q&A prep.
+- [x] **8.7 Expanded Automated Test Suites**: 316 passing assertions (291 frontend + 25 backend pytest suites) verifying schema boundaries, unicode resilience, and AI scoring variance.

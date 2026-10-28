@@ -1,13 +1,14 @@
 /**
  * Interview Arcade — Placement Interview Simulator Chamber
- * Features behavioral STAR methodology & technical system design scenarios,
- * instant rubric feedback, mistake cataloging, and server-side scoring sync.
+ * Features candidate-authored STAR responses, deep AI rubric evaluation,
+ * strengths & omission detection, benchmark mentor exemplars, and learning path linkages.
  */
 
 import { INTERVIEW_SCENARIOS } from '../data/interview-scenarios.js';
 import { progress } from '../services/progress.js';
 import { audio } from '../services/audio.js';
 import { mistakes } from '../services/mistakes.js';
+import { api } from '../services/api-client.js';
 
 export function createInterviewView(params, container) {
   let currentIndex = 0;
@@ -19,6 +20,7 @@ export function createInterviewView(params, container) {
   let totalScoreEarned = 0;
   let scenarioSubmissions = [];
   let loggedMistakes = [];
+  let lastAiEvaluation = null;
 
   function init() {
     currentIndex = 0;
@@ -27,6 +29,7 @@ export function createInterviewView(params, container) {
     totalScoreEarned = 0;
     scenarioSubmissions = [];
     loggedMistakes = [];
+    lastAiEvaluation = null;
     sessionStartTime = Date.now();
     renderScenario();
   }
@@ -73,7 +76,7 @@ export function createInterviewView(params, container) {
 
   function handleTimeExpired() {
     audio.wrong();
-    selectedOptionIndex = -1; // No answer selected
+    selectedOptionIndex = -1;
     submitAnswer(true);
   }
 
@@ -82,6 +85,7 @@ export function createInterviewView(params, container) {
     const totalCount = INTERVIEW_SCENARIOS.length;
     selectedOptionIndex = null;
     isAnswerSubmitted = false;
+    lastAiEvaluation = null;
 
     container.innerHTML = `
       <div class="content-container interview-chamber">
@@ -132,7 +136,12 @@ export function createInterviewView(params, container) {
           </div>
         </div>
 
-        <!-- Candidate Action Options -->
+        <!-- Strategic Direction Options -->
+        <div style="margin-top: var(--space-md); margin-bottom: var(--space-xs);">
+          <label style="font-weight: bold; font-size: var(--font-size-sm); color: var(--color-ink);">
+            Option A-D: Select Strategic Approach
+          </label>
+        </div>
         <div class="scenario-options-grid" role="radiogroup" aria-label="Candidate Strategic Decisions">
           ${scenario.options.map((opt, idx) => `
             <button type="button" class="scenario-option-btn" data-index="${idx}" role="radio" aria-checked="false">
@@ -144,10 +153,28 @@ export function createInterviewView(params, container) {
           `).join('')}
         </div>
 
+        <!-- Candidate Voice & Open-Ended Drafting Box -->
+        <div class="card" style="margin-top: var(--space-md); margin-bottom: var(--space-md); padding: var(--space-md); background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-xs); flex-wrap: wrap; gap: 4px;">
+            <label for="candidate-draft-text" style="font-weight: bold; font-size: var(--font-size-sm); color: var(--color-ink);">
+              🎙️ Candidate Voice: Elaborate or Draft Your Answer
+            </label>
+            <span class="badge badge-subtle" style="font-size: var(--font-size-xs);">Evaluated by AI Rubric</span>
+          </div>
+          <p style="font-size: var(--font-size-xs); color: var(--color-ink-muted); margin-bottom: var(--space-xs); line-height: 1.4;">
+            Articulate your engineering actions, metrics, and trade-offs. You can edit this text or select an option above to prefill.
+          </p>
+          <textarea id="candidate-draft-text" rows="4" style="width: 100%; box-sizing: border-box; padding: var(--space-sm); border: 1px solid var(--color-border); border-radius: var(--radius-sm); font-family: inherit; font-size: var(--font-size-sm); resize: vertical; line-height: 1.5;" placeholder="Draft your response using the STAR framework: Situation, Task, Action, and quantifiable Result (e.g., latency reduction, zero data loss)..."></textarea>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: var(--space-xs);">
+            <span id="draft-word-count" style="font-size: var(--font-size-xs); color: var(--color-ink-muted);">0 words</span>
+            <span style="font-size: var(--font-size-xs); color: var(--color-ink-muted);">Tip: Cite specific numbers, tools, and trade-offs.</span>
+          </div>
+        </div>
+
         <!-- Action Submit Row -->
-        <div style="display: flex; justify-content: flex-end; gap: var(--space-sm); margin-bottom: var(--space-xl);">
+        <div style="display: flex; justify-content: flex-end; gap: var(--space-sm); margin-bottom: var(--space-xl); flex-wrap: wrap;">
           <button type="button" id="submit-scenario-btn" class="btn btn-primary" disabled>
-            Lock Response (Enter)
+            ✨ Submit & Evaluate with AI
           </button>
         </div>
 
@@ -164,9 +191,25 @@ export function createInterviewView(params, container) {
     const optionBtns = container.querySelectorAll('.scenario-option-btn');
     const submitBtn = container.querySelector('#submit-scenario-btn');
     const restartBtn = container.querySelector('#restart-interview-btn');
+    const draftTextarea = container.querySelector('#candidate-draft-text');
+    const wordCountSpan = container.querySelector('#draft-word-count');
+
+    function updateWordCount() {
+      if (!draftTextarea || !wordCountSpan) return;
+      const text = draftTextarea.value.trim();
+      const count = text ? text.split(/\s+/).length : 0;
+      wordCountSpan.textContent = `${count} word${count === 1 ? '' : 's'}`;
+      if (count >= 3 && submitBtn && !isAnswerSubmitted) {
+        submitBtn.disabled = false;
+      }
+    }
+
+    if (draftTextarea) {
+      draftTextarea.addEventListener('input', updateWordCount);
+    }
 
     optionBtns.forEach(btn => {
-      btn.addEventListener('click', (e) => {
+      btn.addEventListener('click', () => {
         if (isAnswerSubmitted) return;
         const idx = parseInt(btn.getAttribute('data-index'), 10);
         selectedOptionIndex = idx;
@@ -179,6 +222,14 @@ export function createInterviewView(params, container) {
         btn.classList.add('selected');
         btn.setAttribute('aria-checked', 'true');
 
+        // Prefill draft text if empty or previous option text
+        const scenario = INTERVIEW_SCENARIOS[currentIndex];
+        const chosen = scenario.options[idx];
+        if (draftTextarea && chosen) {
+          draftTextarea.value = chosen.text;
+          updateWordCount();
+        }
+
         if (submitBtn) {
           submitBtn.disabled = false;
         }
@@ -187,7 +238,7 @@ export function createInterviewView(params, container) {
 
     if (submitBtn) {
       submitBtn.addEventListener('click', () => {
-        if (selectedOptionIndex !== null && !isAnswerSubmitted) {
+        if (!isAnswerSubmitted) {
           submitAnswer(false);
         }
       });
@@ -199,32 +250,18 @@ export function createInterviewView(params, container) {
         init();
       });
     }
-
-    // Keyboard shortcuts
-    const handleKeyDown = (e) => {
-      if (isAnswerSubmitted) return;
-      if (['1', '2', '3', '4'].includes(e.key)) {
-        const idx = parseInt(e.key, 10) - 1;
-        if (optionBtns[idx]) optionBtns[idx].click();
-      } else if (['a', 'b', 'c', 'd'].includes(e.key.toLowerCase())) {
-        const map = { a: 0, b: 1, c: 2, d: 3 };
-        const idx = map[e.key.toLowerCase()];
-        if (optionBtns[idx]) optionBtns[idx].click();
-      } else if (e.key === 'Enter' && selectedOptionIndex !== null) {
-        submitAnswer(false);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown, { once: true });
   }
 
-  function submitAnswer(isTimeout = false) {
+  async function submitAnswer(isTimeout = false) {
     stopTimer();
     isAnswerSubmitted = true;
     const scenario = INTERVIEW_SCENARIOS[currentIndex];
+    const draftTextarea = container.querySelector('#candidate-draft-text');
+    const userText = draftTextarea ? draftTextarea.value.trim() : '';
+
     const isCorrect = selectedOptionIndex === scenario.correctIndex;
     const chosenOption = selectedOptionIndex >= 0 ? scenario.options[selectedOptionIndex] : null;
-    const pointsAwarded = chosenOption ? chosenOption.score : 0;
+    const pointsAwarded = chosenOption ? chosenOption.score : (userText.length > 50 ? 70 : 30);
     totalScoreEarned += pointsAwarded;
 
     // Track submission for server verification
@@ -232,24 +269,6 @@ export function createInterviewView(params, container) {
       challenge_id: scenario.id,
       selected_option_index: selectedOptionIndex >= 0 ? selectedOptionIndex : -1
     });
-
-    if (isCorrect) {
-      audio.correct();
-    } else {
-      audio.wrong();
-      // Record in Mistakes Notebook
-      const mistakeRecord = {
-        challengeId: scenario.id,
-        category: scenario.type === 'behavioral' ? 'Behavioral Interview' : 'System Design',
-        title: scenario.title,
-        prompt: scenario.situation + '\n\n' + scenario.prompt,
-        studentAnswer: chosenOption ? chosenOption.text : 'Time Expired / No Response',
-        correctAnswer: scenario.options[scenario.correctIndex].text,
-        explanation: scenario.explanation + (chosenOption ? `\nCritique of your choice: ${chosenOption.critique}` : '')
-      };
-      loggedMistakes.push(mistakeRecord);
-      mistakes.recordMistake(mistakeRecord);
-    }
 
     // Update option button styles
     const optionBtns = container.querySelectorAll('.scenario-option-btn');
@@ -263,50 +282,174 @@ export function createInterviewView(params, container) {
     });
 
     const submitBtn = container.querySelector('#submit-scenario-btn');
-    if (submitBtn) submitBtn.style.display = 'none';
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.style.display = 'none';
+    }
 
-    // Render detailed pedagogical feedback
     const feedbackArea = container.querySelector('#scenario-feedback-area');
     if (feedbackArea) {
       feedbackArea.innerHTML = `
-        <div class="scenario-feedback-card ${isCorrect ? 'success-card' : 'error-card'}">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-sm);">
-            <h4>${isCorrect ? '✨ Exemplary Engineering Decision (+100 pts)' : `⚠️ Suboptimal Approach (${pointsAwarded} pts)`}</h4>
-            <span class="badge ${isCorrect ? 'badge-accent' : 'badge-subtle'}">
-              Score: ${pointsAwarded} / 100
+        <div class="card" style="padding: var(--space-lg); text-align: center; border: 1px solid var(--color-border);">
+          <div style="display: inline-block; margin-bottom: var(--space-xs);">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite;"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>
+          </div>
+          <p style="font-size: var(--font-size-sm); color: var(--color-ink-muted);">AI Evaluation Engine analyzing response structure, technical depth, and omissions...</p>
+        </div>
+        <style>@keyframes spin { 100% { transform: rotate(360deg); } }</style>
+      `;
+    }
+
+    // Call real AI evaluation endpoint
+    let aiEvaluation = null;
+    try {
+      aiEvaluation = await api.evaluateResponse({
+        scenario_id: scenario.id,
+        scenario_title: scenario.title,
+        scenario_type: scenario.type,
+        prompt: scenario.prompt,
+        user_response: userText || (chosenOption ? chosenOption.text : 'No response provided (timed out).')
+      });
+      lastAiEvaluation = aiEvaluation;
+    } catch (err) {
+      console.warn('AI evaluation endpoint fallback:', err);
+      // Fallback object in case server is unreachable
+      aiEvaluation = {
+        scenario_id: scenario.id,
+        scenario_title: scenario.title,
+        overall_score: pointsAwarded,
+        evaluation_mode: 'client_fallback',
+        technical_accuracy: isCorrect ? 90 : 50,
+        communication_clarity: 70,
+        rubric_scores: { "Approach": pointsAwarded },
+        strengths: isCorrect ? ["Chose the optimal engineering strategy."] : ["Attempted the challenge."],
+        omissions_and_gaps: isCorrect ? [] : ["Could strengthen data-backed metrics and architectural trade-offs."],
+        improvement_advice: scenario.explanation,
+        exemplar_answer: scenario.options[scenario.correctIndex].text,
+        target_competency: scenario.category,
+        recommended_next_action: "Review recommended modules on your dashboard."
+      };
+    }
+
+    if (isCorrect || (aiEvaluation && aiEvaluation.overall_score >= 70)) {
+      audio.correct();
+    } else {
+      audio.wrong();
+      // Record in Mistakes Notebook
+      const mistakeRecord = {
+        challengeId: scenario.id,
+        category: scenario.type === 'behavioral' ? 'Behavioral Interview' : 'System Design',
+        title: scenario.title,
+        prompt: scenario.situation + '\n\n' + scenario.prompt,
+        studentAnswer: userText || (chosenOption ? chosenOption.text : 'Time Expired / No Response'),
+        correctAnswer: scenario.options[scenario.correctIndex].text,
+        explanation: scenario.explanation + (aiEvaluation.omissions_and_gaps.length > 0 ? `\nCritical Gaps: ${aiEvaluation.omissions_and_gaps.join('; ')}` : '')
+      };
+      loggedMistakes.push(mistakeRecord);
+      mistakes.recordMistake(mistakeRecord);
+    }
+
+    renderFeedbackCard(aiEvaluation, scenario, chosenOption, isCorrect, pointsAwarded);
+  }
+
+  function renderFeedbackCard(aiEval, scenario, chosenOption, isCorrect, pointsAwarded) {
+    const feedbackArea = container.querySelector('#scenario-feedback-area');
+    if (!feedbackArea) return;
+
+    const rubricItems = Object.entries(aiEval.rubric_scores || {});
+    const isLlm = aiEval.evaluation_mode === 'gemini_llm';
+
+    feedbackArea.innerHTML = `
+      <div class="scenario-feedback-card ${aiEval.overall_score >= 70 ? 'success-card' : 'error-card'}" style="margin-top: var(--space-md); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-lg); background: var(--color-surface); box-shadow: var(--shadow-tactile-sm);">
+        <!-- Header Strip -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-md); flex-wrap: wrap; gap: 8px;">
+          <div>
+            <span class="badge ${isLlm ? 'badge-accent' : 'badge-subtle'}" style="margin-bottom: 4px;">
+              ${isLlm ? '✨ Gemini AI Evaluation' : '⚙️ Semantic Heuristic Evaluation'}
             </span>
+            <h3 style="margin: 4px 0 0; color: var(--color-ink);">
+              ${aiEval.overall_score >= 80 ? '🌟 Strong Placement Answer' : aiEval.overall_score >= 60 ? '⚡ Good Baseline, Gaps Identified' : '⚠️ Suboptimal Response'}
+            </h3>
           </div>
-
-          <p style="margin-bottom: var(--space-md); line-height: 1.6;">
-            ${chosenOption ? chosenOption.critique : 'Time expired before response was submitted.'}
-          </p>
-
-          <div style="background: var(--color-bg-subtle); padding: var(--space-md); border-radius: var(--radius-sm); margin-bottom: var(--space-md); border: 1px solid var(--color-border);">
-            <strong>Interview Strategy & Key Takeaways:</strong>
-            <p style="margin-top: 4px; font-size: var(--font-size-sm);">${scenario.explanation}</p>
-          </div>
-
-          <div style="display: flex; justify-content: flex-end;">
-            <button type="button" id="next-scenario-btn" class="btn btn-primary">
-              ${currentIndex + 1 < INTERVIEW_SCENARIOS.length ? 'Next Scenario ➔' : 'Complete Interview & View Scorecard ➔'}
-            </button>
+          <div style="text-align: right;">
+            <span style="font-size: var(--font-size-2xl); font-weight: 900; color: ${aiEval.overall_score >= 70 ? 'var(--color-success)' : 'var(--color-accent)'};">
+              ${aiEval.overall_score} / 100
+            </span>
+            <div style="font-size: var(--font-size-xs); color: var(--color-ink-muted);">Composite Rubric Score</div>
           </div>
         </div>
-      `;
 
-      const nextBtn = feedbackArea.querySelector('#next-scenario-btn');
-      if (nextBtn) {
-        nextBtn.focus();
-        nextBtn.addEventListener('click', () => {
-          audio.click();
-          if (currentIndex + 1 < INTERVIEW_SCENARIOS.length) {
-            currentIndex++;
-            renderScenario();
-          } else {
-            renderFinalScorecard();
-          }
-        });
-      }
+        <!-- Rubric Pillars Grid -->
+        ${rubricItems.length > 0 ? `
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: var(--space-xs); margin-bottom: var(--space-md); background: var(--color-bg-subtle); padding: var(--space-sm); border-radius: var(--radius-sm); border: 1px solid var(--color-border);">
+            ${rubricItems.map(([pillar, val]) => `
+              <div style="text-align: center; padding: 4px;">
+                <div style="font-size: var(--font-size-xs); color: var(--color-ink-muted); text-transform: uppercase;">${pillar}</div>
+                <div style="font-size: var(--font-size-md); font-weight: bold; color: ${val >= 75 ? 'var(--color-success)' : 'var(--color-ink)'};">${val}%</div>
+              </div>
+            `).join('')}
+          </div>
+        ` : ''}
+
+        <!-- Strengths Section -->
+        <div style="margin-bottom: var(--space-sm);">
+          <strong style="color: var(--color-success); font-size: var(--font-size-sm);">✓ Demonstrated Strengths:</strong>
+          <ul style="margin: 4px 0 0 var(--space-md); font-size: var(--font-size-sm); line-height: 1.5; color: var(--color-ink);">
+            ${aiEval.strengths.map(s => `<li>${s}</li>`).join('')}
+          </ul>
+        </div>
+
+        <!-- Critical Omissions & Gaps -->
+        ${aiEval.omissions_and_gaps.length > 0 ? `
+          <div style="margin-bottom: var(--space-md); background: rgba(224, 86, 38, 0.05); padding: var(--space-sm); border-radius: var(--radius-sm); border-left: 3px solid var(--color-accent);">
+            <strong style="color: var(--color-accent); font-size: var(--font-size-sm);">⚠️ Critical Gaps & Missing Trade-Offs:</strong>
+            <ul style="margin: 4px 0 0 var(--space-md); font-size: var(--font-size-sm); line-height: 1.5; color: var(--color-ink);">
+              ${aiEval.omissions_and_gaps.map(g => `<li>${g}</li>`).join('')}
+            </ul>
+          </div>
+        ` : ''}
+
+        <!-- Actionable Improvement Coaching -->
+        <div style="background: var(--color-bg-subtle); padding: var(--space-sm) var(--space-md); border-radius: var(--radius-sm); margin-bottom: var(--space-md); border: 1px solid var(--color-border);">
+          <strong style="font-size: var(--font-size-sm);">Coach's Takeaway:</strong>
+          <p style="margin: 4px 0 0; font-size: var(--font-size-sm); color: var(--color-ink); line-height: 1.5;">${aiEval.improvement_advice}</p>
+        </div>
+
+        <!-- Collapsible Mentor Benchmark Exemplar -->
+        <details style="margin-bottom: var(--space-lg); border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: var(--space-sm); background: var(--color-surface);">
+          <summary style="font-weight: bold; font-size: var(--font-size-sm); cursor: pointer; color: var(--color-primary);">
+            💡 View Mentor Benchmark Exemplar Answer (Click to Expand)
+          </summary>
+          <div style="margin-top: var(--space-sm); font-size: var(--font-size-sm); line-height: 1.6; white-space: pre-line; color: var(--color-ink); background: var(--color-bg-subtle); padding: var(--space-sm); border-radius: var(--radius-xs);">
+            ${aiEval.exemplar_answer}
+          </div>
+        </details>
+
+        <!-- Recommended Next Action Strip -->
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--space-sm); padding-top: var(--space-sm); border-top: 1px solid var(--color-border);">
+          <div style="font-size: var(--font-size-xs); color: var(--color-ink-muted); max-width: 400px;">
+            <strong>Target Competency:</strong> ${aiEval.target_competency}<br>
+            <strong>Recommended Next:</strong> ${aiEval.recommended_next_action}
+          </div>
+          <button type="button" id="next-scenario-btn" class="btn btn-primary">
+            ${currentIndex + 1 < INTERVIEW_SCENARIOS.length ? 'Next Scenario ➔' : 'Complete Interview & View Scorecard ➔'}
+          </button>
+        </div>
+      </div>
+    `;
+
+    const nextBtn = feedbackArea.querySelector('#next-scenario-btn');
+    if (nextBtn) {
+      nextBtn.focus();
+      nextBtn.addEventListener('click', () => {
+        audio.click();
+        if (currentIndex + 1 < INTERVIEW_SCENARIOS.length) {
+          currentIndex++;
+          renderScenario();
+        } else {
+          renderFinalScorecard();
+        }
+      });
     }
   }
 
@@ -317,7 +460,6 @@ export function createInterviewView(params, container) {
     const percentage = Math.round((totalScoreEarned / totalPossible) * 100);
     const correctCount = INTERVIEW_SCENARIOS.length - loggedMistakes.length;
 
-    // Determine Placement Hire Rating
     let ratingTier = 'Needs Technical Preparation';
     let ratingBadgeClass = 'badge-subtle';
     if (percentage >= 85) {
@@ -337,7 +479,6 @@ export function createInterviewView(params, container) {
       audio.wrong();
     }
 
-    // Persist session to local engine and trigger server sync
     progress.recordSession({
       gameId: 'interview',
       gameTitle: 'Placement Interview Simulator',
@@ -348,18 +489,18 @@ export function createInterviewView(params, container) {
       questionsAnswered: INTERVIEW_SCENARIOS.length,
       correctAnswers: correctCount,
       incorrectAnswers: loggedMistakes.length,
-      tags: ['Behavioral', 'System Design', 'STAR'],
+      tags: ['Behavioral', 'System Design', 'STAR', 'AI-Evaluated'],
       answers: scenarioSubmissions,
       mistakes: loggedMistakes
     });
 
     container.innerHTML = `
       <div class="content-container interview-chamber">
-        <div class="card" style="text-align: center; padding: var(--space-2xl) var(--space-lg); max-width: 720px; margin: 0 auto;">
+        <div class="card" style="text-align: center; padding: var(--space-2xl) var(--space-lg); max-width: 720px; margin: 0 auto; border: 1px solid var(--color-border); box-shadow: var(--shadow-tactile-sm);">
           <span style="font-size: 3.5rem;">🎙️</span>
           <h2 style="margin: var(--space-sm) 0;">Interview Simulation Complete</h2>
           <p style="margin-bottom: var(--space-md); color: var(--color-ink-muted);">
-            Evaluation complete across ${INTERVIEW_SCENARIOS.length} behavioral and architectural design scenarios.
+            Evaluation complete across ${INTERVIEW_SCENARIOS.length} behavioral and architectural design rounds.
           </p>
 
           <div style="margin: var(--space-lg) 0;">
@@ -374,7 +515,7 @@ export function createInterviewView(params, container) {
               <span class="stat-value" style="color: var(--color-accent);">${percentage}%</span>
             </div>
             <div class="stat-tile">
-              <span class="stat-label">Scenarios Solved</span>
+              <span class="stat-label">Rounds Cleared</span>
               <span class="stat-value">${correctCount} / ${INTERVIEW_SCENARIOS.length}</span>
             </div>
             <div class="stat-tile">
@@ -385,24 +526,24 @@ export function createInterviewView(params, container) {
 
           ${loggedMistakes.length > 0 ? `
             <div style="background: rgba(224, 86, 38, 0.08); border: 1px solid var(--color-accent); border-radius: var(--radius-sm); padding: var(--space-md); margin-bottom: var(--space-lg); text-align: left;">
-              <strong>📝 ${loggedMistakes.length} Review Items Saved</strong>
-              <p style="font-size: var(--font-size-sm); margin-top: 4px;">
-                Your suboptimal choices have been cataloged in your <strong>Mistake Notebook</strong> so you can retest concepts and strengthen your interview responses.
+              <strong>📝 ${loggedMistakes.length} Review Items Saved to Notebook</strong>
+              <p style="font-size: var(--font-size-sm); margin-top: 4px; color: var(--color-ink);">
+                Suboptimal decisions have been logged in your <strong>Mistakes Notebook</strong> with model critiques and mentor exemplars so you can review before your real interview.
               </p>
             </div>
           ` : `
             <div style="background: rgba(34, 139, 34, 0.08); border: 1px solid var(--color-success); border-radius: var(--radius-sm); padding: var(--space-md); margin-bottom: var(--space-lg);">
               <strong>🌟 Flawless Simulation Round!</strong>
-              <p style="font-size: var(--font-size-sm); margin-top: 4px;">
-                You demonstrated exemplary senior engineering maturity and architectural reasoning.
+              <p style="font-size: var(--font-size-sm); margin-top: 4px; color: var(--color-ink);">
+                Exemplary performance across architecture trade-offs, crisis management, and STAR communication.
               </p>
             </div>
           `}
 
           <div style="display: flex; justify-content: center; gap: var(--space-sm); flex-wrap: wrap;">
             <button type="button" id="retake-interview-btn" class="btn btn-primary">Retake Simulation</button>
-            <a href="#/mistakes" class="btn btn-subtle">Review Mistakes (${loggedMistakes.length})</a>
-            <a href="#/dashboard" class="btn btn-subtle">View Updated Mastery</a>
+            <a href="#/dashboard" class="btn btn-subtle">View Personalized Learning Roadmap ➔</a>
+            ${loggedMistakes.length > 0 ? `<a href="#/mistakes" class="btn btn-subtle">Review Mistakes (${loggedMistakes.length})</a>` : ''}
           </div>
         </div>
       </div>

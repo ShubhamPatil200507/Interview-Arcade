@@ -33,6 +33,11 @@ class Settings(BaseSettings):
     # Rate Limiting Defaults
     AUTH_RATE_LIMIT: str = "10/minute"
     SUBMIT_RATE_LIMIT: str = "30/minute"
+    
+    # AI Evaluation & LLM Configuration
+    GEMINI_API_KEY: str = ""
+    GEMINI_MODEL: str = "gemini-1.5-flash"
+    OPENAI_API_KEY: str = ""
 
     model_config = SettingsConfigDict(env_file=".env", case_sensitive=True)
 

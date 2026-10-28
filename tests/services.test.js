@@ -6,6 +6,7 @@
 import { storage } from '../js/services/storage.js';
 import { progress, ACHIEVEMENT_DEFINITIONS } from '../js/services/progress.js';
 import { mistakes } from '../js/services/mistakes.js';
+import { dailySprint, DAILY_CHALLENGES } from '../js/services/daily-sprint.js';
 
 export function runServicesTests(assert) {
   // Test StorageService
@@ -134,5 +135,24 @@ export function runServicesTests(assert) {
     // Clean clear
     mistakes.clearAll();
     assert.equal(mistakes.getMistakes().length, 0, 'Mistakes notebook cleared successfully');
+  });
+
+  // Test DailySprintService
+  assert.describe('DailySprintService', () => {
+    storage.remove('ia_daily_sprint_state');
+    const challenge = dailySprint.getTodayChallenge();
+    assert.ok(challenge && challenge.id, 'Returns deterministic today challenge');
+    assert.ok(challenge.prompt && challenge.options.length >= 4, 'Challenge has prompt and >= 4 options');
+    assert.ok(challenge.correctIndex >= 0 && challenge.correctIndex < challenge.options.length, 'Challenge has valid correctIndex');
+
+    const todayStr = dailySprint.getTodayDateString();
+    assert.ok(/^\d{4}-\d{2}-\d{2}$/.test(todayStr), 'Date format is valid YYYY-MM-DD');
+
+    assert.equal(dailySprint.isCompletedToday(), false, 'Sprint initially not completed today');
+
+    const newStreak = dailySprint.recordCompletion(100, 100, challenge.id);
+    assert.equal(newStreak, 1, 'Initial sprint completion records 1-day streak');
+    assert.equal(dailySprint.isCompletedToday(), true, 'Sprint is marked completed today');
+    assert.equal(dailySprint.getStreak(), 1, 'Current streak is 1');
   });
 }

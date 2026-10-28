@@ -342,7 +342,7 @@ export function createAssessmentView(params, container) {
           </div>
 
           <!-- Target Role Recommendation Box -->
-          <div style="background: var(--color-surface); border: 2px solid var(--color-ink); box-shadow: var(--shadow-tactile-sm); border-radius: var(--radius-md); padding: var(--space-md); text-align: left; margin-bottom: var(--space-xl);">
+          <div style="background: var(--color-surface); border: 2px solid var(--color-ink); box-shadow: var(--shadow-tactile-sm); border-radius: var(--radius-md); padding: var(--space-md); text-align: left; margin-bottom: var(--space-lg);">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-xs);">
               <span class="badge badge-accent">Recommended Career Track</span>
               <span class="badge badge-subtle">Algorithmic Match</span>
@@ -358,6 +358,49 @@ export function createAssessmentView(params, container) {
               <span id="track-adopted-status" style="font-size: var(--font-size-xs); font-weight: bold; color: var(--color-success); display: none;">
                 ✓ Target Track Saved!
               </span>
+            </div>
+          </div>
+
+          <!-- Evidence-Based Skill Gap Analysis & Recommended Next Action -->
+          <div style="background: var(--color-bg-subtle); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-md); text-align: left; margin-bottom: var(--space-xl);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-xs);">
+              <span class="badge badge-primary">Skill Gap Analysis</span>
+              <span style="font-size: var(--font-size-xs); color: var(--color-ink-muted);">Verified Answer Evidence</span>
+            </div>
+            <h3 style="margin: 4px 0 var(--space-xs); font-size: var(--font-size-base); color: var(--color-ink);">
+              ${loggedMistakes.length === 0 ? '✓ No Critical Skill Gaps Detected' : `⚠️ ${loggedMistakes.length} High-Priority Gaps Identified`}
+            </h3>
+            ${loggedMistakes.length === 0 ? `
+              <p style="font-size: var(--font-size-sm); color: var(--color-ink-muted); margin-bottom: var(--space-md);">
+                Your baseline technical calibration demonstrates solid competency across OOP, SQL, DSA, Systems, and quantitative aptitude.
+              </p>
+            ` : `
+              <div style="display: flex; flex-direction: column; gap: var(--space-xs); margin-bottom: var(--space-md);">
+                ${loggedMistakes.map(m => `
+                  <div style="background: var(--color-surface); padding: var(--space-xs) var(--space-sm); border-radius: var(--radius-xs); border-left: 3px solid var(--color-accent); font-size: var(--font-size-xs); line-height: 1.4;">
+                    <strong style="color: var(--color-ink);">${m.category}:</strong> ${m.explanation}
+                  </div>
+                `).join('')}
+              </div>
+            `}
+
+            <!-- Prominent Next Action Recommendation -->
+            <div style="border-top: 1px solid var(--color-border); padding-top: var(--space-sm); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--space-xs);">
+              <div>
+                <div style="font-size: var(--font-size-xs); font-weight: bold; color: var(--color-accent); text-transform: uppercase;">Top Priority Next Action:</div>
+                <div style="font-size: var(--font-size-sm); font-weight: bold; color: var(--color-ink);">
+                  ${loggedMistakes.length > 0 && loggedMistakes[0].category.includes('Relational') ? 'Practice SQL Fill in the Blanks' :
+                    loggedMistakes.length > 0 && loggedMistakes[0].category.includes('Memory') ? 'Practice Debug the Code (C++)' :
+                    loggedMistakes.length > 0 && loggedMistakes[0].category.includes('Algorithms') ? 'Practice DSA Match the Following' :
+                    'Practice Tic Tac Toe + OOP Quiz'}
+                </div>
+              </div>
+              <a href="${loggedMistakes.length > 0 && loggedMistakes[0].category.includes('Relational') ? '#/game/sql' :
+                        loggedMistakes.length > 0 && loggedMistakes[0].category.includes('Memory') ? '#/game/debugger' :
+                        loggedMistakes.length > 0 && loggedMistakes[0].category.includes('Algorithms') ? '#/game/dsa' :
+                        '#/game/tictactoe'}" class="btn btn-primary btn-sm">
+                Start Recommended Practice ➔
+              </a>
             </div>
           </div>
 

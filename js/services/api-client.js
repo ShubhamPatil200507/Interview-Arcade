@@ -158,6 +158,17 @@ class ApiClient {
   async getRecommendation() {
     return await this.request('/learning/recommendations');
   }
+
+  async evaluateResponse(evaluationPayload) {
+    return await this.request('/ai/evaluate', {
+      method: 'POST',
+      body: JSON.stringify(evaluationPayload)
+    });
+  }
+
+  async getExemplar(scenarioId) {
+    return await this.request(`/ai/exemplar/${scenarioId}`);
+  }
 }
 
 export const api = new ApiClient();

@@ -20,6 +20,7 @@ from backend.api.games import router as games_router
 from backend.api.dashboard import router as dashboard_router
 from backend.api.learning import router as learning_router
 from backend.api.feedback import router as feedback_router
+from backend.api.ai import router as ai_router
 
 
 @asynccontextmanager
@@ -89,6 +90,7 @@ app.include_router(games_router, prefix=settings.API_V1_PREFIX)
 app.include_router(dashboard_router, prefix=settings.API_V1_PREFIX)
 app.include_router(learning_router, prefix=settings.API_V1_PREFIX)
 app.include_router(feedback_router, prefix=settings.API_V1_PREFIX)
+app.include_router(ai_router, prefix=settings.API_V1_PREFIX)
 
 # Static file serving: Serve frontend directly from project root
 project_root = Path(__file__).resolve().parent.parent

@@ -9,6 +9,7 @@ import { storage } from '../services/storage.js';
 import { audio } from '../services/audio.js';
 import { api } from '../services/api-client.js';
 import { mistakes } from '../services/mistakes.js';
+import { dailySprint } from '../services/daily-sprint.js';
 
 export function createDashboardView(params, container) {
   let serverLearningPath = null;
@@ -143,7 +144,10 @@ export function createDashboardView(params, container) {
           </div>
         </div>
 
-        <!-- 7. Verified Milestone Achievements -->
+        <!-- 7. Daily Technical Sprint (Competitive Placement Practice) -->
+        ${renderDailySprintSection()}
+
+        <!-- 8. Verified Milestone Achievements -->
         <div class="dash-section">
           <div class="dash-section-header">
             <h2>Milestone Achievements</h2>
@@ -509,6 +513,68 @@ export function createDashboardView(params, container) {
     `;
   }
 
+  function renderDailySprintSection() {
+    const isCompleted = dailySprint.isCompletedToday();
+    const streak = dailySprint.getStreak();
+    const challenge = dailySprint.getTodayChallenge();
+    const todayStr = dailySprint.getTodayDateString();
+
+    return `
+      <div class="dash-section">
+        <div class="dash-section-header">
+          <div>
+            <h2>Daily Technical Sprint</h2>
+            <span class="dash-section-sub">Synchronized placement calibration problem • Resets daily at 00:00 UTC</span>
+          </div>
+          <div style="display: flex; gap: var(--space-xs); align-items: center;">
+            <span class="badge ${streak > 0 ? 'badge-accent' : 'badge-subtle'}">
+              🔥 ${streak > 0 ? `${streak}-Day Streak` : '0-Day Streak'}
+            </span>
+            <span class="badge badge-subtle">${todayStr}</span>
+          </div>
+        </div>
+
+        <div class="card" style="padding: var(--space-lg); border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface); box-shadow: var(--shadow-tactile-sm);">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--space-xs); flex-wrap: wrap; gap: 8px;">
+            <div>
+              <span class="badge badge-primary" style="margin-bottom: 4px;">${challenge.domain}</span>
+              <h3 style="margin: 4px 0 var(--space-3xs); font-size: var(--font-size-base); color: var(--color-ink);">
+                ${challenge.title}
+              </h3>
+            </div>
+            ${isCompleted ? `
+              <span class="badge badge-accent" style="font-weight: bold;">✓ Solved Today (+50 XP)</span>
+            ` : `
+              <span class="badge badge-subtle">⏱️ 60-Second Challenge</span>
+            `}
+          </div>
+
+          <p style="font-size: var(--font-size-sm); color: var(--color-ink); line-height: 1.5; margin-bottom: var(--space-md);">
+            ${challenge.prompt}
+          </p>
+
+          ${isCompleted ? `
+            <div style="background: var(--color-bg-subtle); padding: var(--space-sm) var(--space-md); border-radius: var(--radius-sm); border: 1px solid var(--color-border); font-size: var(--font-size-xs); line-height: 1.5; color: var(--color-ink);">
+              <strong>Key Placement Insight:</strong> ${challenge.explanation}
+              <div style="margin-top: 6px; color: var(--color-success); font-weight: bold;">
+                You have completed today's sprint! Tomorrow's challenge unlocks at 00:00 UTC.
+              </div>
+            </div>
+          ` : `
+            <div id="daily-sprint-options" style="display: flex; flex-direction: column; gap: var(--space-xs); margin-bottom: var(--space-md);">
+              ${challenge.options.map((opt, idx) => `
+                <button type="button" class="btn btn-subtle daily-option-btn" data-index="${idx}" style="text-align: left; justify-content: flex-start; padding: var(--space-xs) var(--space-sm); font-size: var(--font-size-sm); white-space: normal; line-height: 1.4;">
+                  <span style="font-weight: bold; margin-right: 8px;">[${String.fromCharCode(65 + idx)}]</span> ${opt}
+                </button>
+              `).join('')}
+            </div>
+            <div id="daily-sprint-feedback" style="display: none;"></div>
+          `}
+        </div>
+      </div>
+    `;
+  }
+
   function calculateDomainMastery(metrics) {
     // If server provides breakdown, prioritize it
     if (serverLearningPath?.mastery_breakdown) {
@@ -647,6 +713,67 @@ export function createDashboardView(params, container) {
         bindEvents();
       });
     }
+
+    // Daily Technical Sprint options click binding
+    const dailyOptionBtns = container.querySelectorAll('.daily-option-btn');
+    const dailyFeedback = container.querySelector('#daily-sprint-feedback');
+    const currentChallenge = dailySprint.getTodayChallenge();
+
+    dailyOptionBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = parseInt(btn.getAttribute('data-index'), 10);
+        const isCorrect = idx === currentChallenge.correctIndex;
+        dailyOptionBtns.forEach(b => {
+          b.disabled = true;
+          b.style.pointerEvents = 'none';
+        });
+
+        if (isCorrect) {
+          audio.correct();
+          btn.style.background = 'rgba(34, 139, 34, 0.12)';
+          btn.style.borderColor = 'var(--color-success)';
+          btn.style.color = 'var(--color-success)';
+        } else {
+          audio.wrong();
+          btn.style.background = 'rgba(224, 86, 38, 0.12)';
+          btn.style.borderColor = 'var(--color-accent)';
+          btn.style.color = 'var(--color-accent)';
+          if (dailyOptionBtns[currentChallenge.correctIndex]) {
+            dailyOptionBtns[currentChallenge.correctIndex].style.background = 'rgba(34, 139, 34, 0.12)';
+            dailyOptionBtns[currentChallenge.correctIndex].style.borderColor = 'var(--color-success)';
+          }
+        }
+
+        const newStreak = dailySprint.recordCompletion(isCorrect ? 100 : 40, 100, currentChallenge.id);
+        progress.recordSession({
+          gameId: 'daily_sprint',
+          gameTitle: 'Daily Technical Sprint',
+          difficulty: 'medium',
+          durationSeconds: 30,
+          score: isCorrect ? 100 : 40,
+          maxScore: 100,
+          questionsAnswered: 1,
+          correctAnswers: isCorrect ? 1 : 0,
+          incorrectAnswers: isCorrect ? 0 : 1,
+          tags: ['Daily', 'Sprint', currentChallenge.domain]
+        });
+
+        if (dailyFeedback) {
+          dailyFeedback.style.display = 'block';
+          dailyFeedback.innerHTML = `
+            <div style="background: ${isCorrect ? 'rgba(34, 139, 34, 0.08)' : 'rgba(224, 86, 38, 0.08)'}; border: 1px solid ${isCorrect ? 'var(--color-success)' : 'var(--color-accent)'}; border-radius: var(--radius-sm); padding: var(--space-sm); font-size: var(--font-size-xs); line-height: 1.5; color: var(--color-ink); margin-top: var(--space-xs);">
+              <strong style="color: ${isCorrect ? 'var(--color-success)' : 'var(--color-accent)'};">
+                ${isCorrect ? '✓ Verified Correct! (+50 XP Earned)' : '⚠️ Suboptimal Decision (+20 XP Earned)'}
+              </strong>
+              <p style="margin: 4px 0 0;">${currentChallenge.explanation}</p>
+              <div style="margin-top: 6px; font-weight: bold; color: var(--color-ink);">
+                Current Streak: 🔥 ${newStreak} Day${newStreak === 1 ? '' : 's'} recorded!
+              </div>
+            </div>
+          `;
+        }
+      });
+    });
   }
 
   init();

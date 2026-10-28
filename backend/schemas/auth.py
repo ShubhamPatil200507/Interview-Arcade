@@ -9,19 +9,17 @@ from pydantic import BaseModel, EmailStr, Field, ConfigDict
 
 
 class UserRegisterRequest(BaseModel):
-    username: str = Field(..., min_length=3, max_length=30, pattern=r"^[a-zA-Z0-9_-]+$")
-    email: EmailStr
+    username: str = Field(..., min_length=3, max_length=30)
+    email: EmailStr = Field(..., min_length=5, max_length=120)
     password: str = Field(..., min_length=6, max_length=100)
     target_role: Optional[str] = Field(default="backend", max_length=50)
 
-    model_config = ConfigDict(extra="forbid")
-
 
 class UserLoginRequest(BaseModel):
-    email: EmailStr
+    email: Optional[str] = None
+    username: Optional[str] = None
+    identifier: Optional[str] = None
     password: str = Field(..., min_length=1)
-
-    model_config = ConfigDict(extra="forbid")
 
 
 class UserResponse(BaseModel):

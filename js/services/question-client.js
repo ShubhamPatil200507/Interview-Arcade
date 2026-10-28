@@ -204,6 +204,60 @@ class QuestionClient {
       weak_topics: []
     };
   }
+
+  /**
+   * Verifies an individual answer on the server, falling back to local bank logic if offline.
+   */
+  static async verifyAnswer({ gameId, challengeId, selectedOptionIndex = null, textAnswer = null, localQuestion = null }) {
+    try {
+      const res = await api.request('/questions/verify-single', {
+        method: 'POST',
+        body: JSON.stringify({
+          challenge_id: challengeId,
+          game_id: gameId,
+          selected_option_index: selectedOptionIndex,
+          text_answer: textAnswer
+        })
+      });
+      if (res && res.challenge_id) {
+        return {
+          isCorrect: res.is_correct,
+          explanation: res.explanation,
+          correctPreview: res.correct_answer_preview
+        };
+      }
+    } catch (e) {
+      console.warn('[QuestionClient] Server verification unavailable, using local check:', e.message);
+    }
+
+    // Local fallback check
+    if (localQuestion) {
+      if (localQuestion.correctIndex !== undefined) {
+        const isCorrect = selectedOptionIndex === localQuestion.correctIndex;
+        return {
+          isCorrect,
+          explanation: localQuestion.explanation || '',
+          correctPreview: `Option ${String.fromCharCode(65 + localQuestion.correctIndex)}`
+        };
+      }
+      if (localQuestion.acceptedAnswers) {
+        const userToken = (textAnswer || '').trim().toUpperCase();
+        const accepted = localQuestion.acceptedAnswers.map(t => t.toUpperCase());
+        const isCorrect = accepted.includes(userToken);
+        return {
+          isCorrect,
+          explanation: localQuestion.explanation || '',
+          correctPreview: localQuestion.acceptedAnswers[0]
+        };
+      }
+    }
+
+    return {
+      isCorrect: false,
+      explanation: 'Answer submitted.',
+      correctPreview: null
+    };
+  }
 }
 
 export { QuestionClient };

@@ -80,3 +80,19 @@ class QuestionHistoryStatsResponse(BaseModel):
     weak_topics: List[str]
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class SingleAnswerCheckRequest(BaseModel):
+    """Parameters to verify an individual challenge answer on demand."""
+    challenge_id: str
+    game_id: str = "general"
+    selected_option_index: Optional[int] = None
+    text_answer: Optional[str] = None
+
+
+class SingleAnswerCheckResponse(BaseModel):
+    """Authoritative server feedback for a single answered question."""
+    challenge_id: str
+    is_correct: bool
+    explanation: str
+    correct_answer_preview: Optional[str] = None

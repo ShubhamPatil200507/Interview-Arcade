@@ -4,11 +4,16 @@
  */
 
 import { SQL_SCHEMAS, SQL_CHALLENGES } from '../data/sql-challenges.js';
+import { QuestionClient } from '../services/question-client.js';
 import { progress } from '../services/progress.js';
 import { audio } from '../services/audio.js';
 
 export function createSQLView(params, container) {
   let difficulty = 'all'; // 'all', 'easy', 'medium', 'hard'
+  let practiceMode = 'fresh'; // 'fresh', 'revision'
+  let selectedTopic = 'all';
+  let requestedCount = 4;
+  let deliveryStats = null;
   let challenges = [];
   let currentIndex = 0;
   let score = 0;
@@ -20,13 +25,13 @@ export function createSQLView(params, container) {
   let currentInputValue = '';
   let sessionStartTime = Date.now();
 
-  function init() {
-    setupChallenges();
+  async function init() {
+    await setupChallenges();
     render();
     bindEvents();
   }
 
-  function setupChallenges() {
+  async function setupChallenges() {
     sessionStartTime = Date.now();
     currentIndex = 0;
     score = 0;
@@ -37,12 +42,32 @@ export function createSQLView(params, container) {
     feedback = null;
     currentInputValue = '';
 
-    let pool = [...SQL_CHALLENGES];
-    if (difficulty !== 'all') {
-      pool = pool.filter(c => c.difficulty === difficulty);
-    }
-    pool.sort(() => Math.random() - 0.5);
-    challenges = pool.slice(0, 4);
+    const topicFilter = selectedTopic === 'all' ? null : selectedTopic;
+    const res = await QuestionClient.fetchQuestions({
+      gameId: 'sql',
+      topic: topicFilter,
+      difficulty,
+      count: requestedCount,
+      mode: practiceMode,
+      fallbackBank: SQL_CHALLENGES
+    });
+
+    challenges = res.questions.map(q => {
+      const orig = SQL_CHALLENGES.find(c => c.id === q.id);
+      return {
+        id: q.id,
+        difficulty: q.difficulty,
+        title: orig ? orig.title : (q.topic || 'SQL Challenge'),
+        schemaKey: orig ? orig.schemaKey : (q.metadata?.schemaKey || 'employees'),
+        scenario: orig ? orig.scenario : (q.metadata?.scenario || q.prompt),
+        queryTemplate: orig ? orig.queryTemplate : q.prompt,
+        blankLabel: orig ? orig.blankLabel : 'Keyword',
+        acceptedAnswers: orig ? orig.acceptedAnswers : (q.metadata?.accepted_tokens || q.options || ['SELECT']),
+        hint: orig ? orig.hint : (q.metadata?.hint || 'Review standard SQL clauses.'),
+        explanation: orig ? orig.explanation : (q.explanation || 'Verified relational SQL query syntax.')
+      };
+    });
+    deliveryStats = res;
   }
 
   function render() {
@@ -80,6 +105,41 @@ export function createSQLView(params, container) {
                 <button type="button" class="diff-btn ${difficulty === 'hard' ? 'active' : ''}" data-diff="hard">Hard</button>
               </div>
               <button type="button" id="restart-sql-btn" class="btn btn-sm btn-subtle">Restart</button>
+            </div>
+          </div>
+
+          <!-- Practice Configuration Bar -->
+          <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-xs); background: var(--color-bg-subtle); padding: var(--space-xs) var(--space-sm); border-radius: var(--radius-sm); border: 1px solid var(--color-border); margin-bottom: var(--space-sm);">
+            <div style="display: flex; align-items: center; gap: var(--space-xs); flex-wrap: wrap;">
+              <span style="font-size: var(--font-size-xs); font-weight: bold; color: var(--color-ink-muted);">Topic:</span>
+              <select id="sql-topic-select" style="font-size: var(--font-size-xs); padding: 2px 6px; border-radius: var(--radius-xs); border: 1px solid var(--color-border); background: var(--color-surface);">
+                <option value="all" ${selectedTopic === 'all' ? 'selected' : ''}>All SQL Topics</option>
+                <option value="Filtering" ${selectedTopic === 'Filtering' ? 'selected' : ''}>WHERE & Filtering</option>
+                <option value="Ordering" ${selectedTopic === 'Ordering' ? 'selected' : ''}>LIMIT & Ordering</option>
+                <option value="Aggregation" ${selectedTopic === 'Aggregation' ? 'selected' : ''}>HAVING & Grouping</option>
+                <option value="NULL" ${selectedTopic === 'NULL' ? 'selected' : ''}>NULL & 3VL Logic</option>
+                <option value="Subqueries" ${selectedTopic === 'Subqueries' ? 'selected' : ''}>Subqueries</option>
+                <option value="Joins" ${selectedTopic === 'Joins' ? 'selected' : ''}>Joins & Outer Joins</option>
+              </select>
+
+              <span style="font-size: var(--font-size-xs); font-weight: bold; color: var(--color-ink-muted); margin-left: 4px;">Practice:</span>
+              <div class="difficulty-selector" role="group" aria-label="Practice Mode">
+                <button type="button" class="diff-btn ${practiceMode === 'fresh' ? 'active' : ''}" data-practice="fresh">Fresh</button>
+                <button type="button" class="diff-btn ${practiceMode === 'revision' ? 'active' : ''}" data-practice="revision">Revision</button>
+              </div>
+
+              <span style="font-size: var(--font-size-xs); font-weight: bold; color: var(--color-ink-muted); margin-left: 4px;">Count:</span>
+              <div class="difficulty-selector" role="group" aria-label="Question Count">
+                <button type="button" class="diff-btn ${requestedCount === 3 ? 'active' : ''}" data-count="3">3</button>
+                <button type="button" class="diff-btn ${requestedCount === 4 ? 'active' : ''}" data-count="4">4</button>
+                <button type="button" class="diff-btn ${requestedCount === 6 ? 'active' : ''}" data-count="6">6</button>
+              </div>
+            </div>
+
+            <div>
+              <span class="badge ${deliveryStats?.isGenerated ? 'badge-accent' : 'badge-subtle'}" style="font-size: var(--font-size-xs);">
+                ${deliveryStats ? (deliveryStats.isGenerated ? `✨ AI Questions Active (${deliveryStats.generatedCount} generated)` : `🏛️ Verified Bank (${deliveryStats.deliveredCount} available)`) : '⚡ Adaptive Delivery'}
+              </span>
             </div>
           </div>
 
@@ -217,21 +277,52 @@ export function createSQLView(params, container) {
   }
 
   function bindEvents() {
-    container.querySelectorAll('.diff-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
+    container.querySelectorAll('.diff-btn[data-diff]').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
         difficulty = e.target.getAttribute('data-diff');
         audio.click();
-        setupChallenges();
+        await setupChallenges();
         render();
         bindEvents();
       });
     });
 
+    container.querySelectorAll('.diff-btn[data-practice]').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        practiceMode = e.target.getAttribute('data-practice');
+        audio.click();
+        await setupChallenges();
+        render();
+        bindEvents();
+      });
+    });
+
+    container.querySelectorAll('.diff-btn[data-count]').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        requestedCount = parseInt(e.target.getAttribute('data-count'), 10);
+        audio.click();
+        await setupChallenges();
+        render();
+        bindEvents();
+      });
+    });
+
+    const topicSelect = container.querySelector('#sql-topic-select');
+    if (topicSelect) {
+      topicSelect.addEventListener('change', async (e) => {
+        selectedTopic = e.target.value;
+        audio.click();
+        await setupChallenges();
+        render();
+        bindEvents();
+      });
+    }
+
     const restartBtn = container.querySelector('#restart-sql-btn');
     if (restartBtn) {
-      restartBtn.addEventListener('click', () => {
+      restartBtn.addEventListener('click', async () => {
         audio.click();
-        setupChallenges();
+        await setupChallenges();
         render();
         bindEvents();
       });
@@ -296,13 +387,20 @@ export function createSQLView(params, container) {
     }
   }
 
-  function evaluateInput() {
+  async function evaluateInput() {
     const currentC = challenges[currentIndex];
-    const cleanedInput = currentInputValue.trim().toUpperCase();
+    const cleanedInput = currentInputValue.trim();
     if (!cleanedInput) return;
 
     attempts += 1;
-    const isMatch = currentC.acceptedAnswers.some(ans => ans.toUpperCase() === cleanedInput);
+    const verification = await QuestionClient.verifyAnswer({
+      gameId: 'sql',
+      challengeId: currentC.id,
+      textAnswer: cleanedInput,
+      localQuestion: currentC
+    });
+
+    const isMatch = verification.isCorrect;
 
     if (isMatch) {
       correctCount += 1;
@@ -311,13 +409,14 @@ export function createSQLView(params, container) {
       audio.correct();
       feedback = {
         isCorrect: true,
-        explanation: currentC.explanation
+        explanation: verification.explanation || currentC.explanation
       };
     } else {
       audio.wrong();
+      const preview = verification.correctPreview || (currentC.acceptedAnswers ? currentC.acceptedAnswers[0] : '');
       feedback = {
         isCorrect: false,
-        explanation: `Expected "${currentC.acceptedAnswers[0]}". ${currentC.explanation}`
+        explanation: `${preview ? `Expected "${preview}". ` : ''}${verification.explanation || currentC.explanation}`
       };
     }
 

@@ -93,7 +93,6 @@ async function setupAuthUI() {
           audio.click();
           updateAuthHeader(null);
           showToast('Logged out of server sync. Practicing in local storage mode.');
-          window.location.reload();
         });
       }
     } else {
@@ -145,19 +144,19 @@ async function setupAuthUI() {
   if (loginForm) {
     loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const email = document.getElementById('login-email').value;
-      const pwd = document.getElementById('login-password').value;
+      const loginId = (document.getElementById('login-email').value || '').trim();
+      const pwd = document.getElementById('login-password').value || '';
+      if (loginErr) loginErr.style.display = 'none';
       try {
-        const res = await api.login(email, pwd);
+        const res = await api.login(loginId, pwd);
         audio.win();
         closeModal();
         updateAuthHeader(res.user);
         showToast(`Welcome back, ${res.user.username}! Progress is synced.`);
-        window.location.reload();
       } catch (err) {
         audio.wrong();
         if (loginErr) {
-          loginErr.textContent = err.message;
+          loginErr.textContent = err.message || 'Login failed. Please check your credentials.';
           loginErr.style.display = 'block';
         }
       }
@@ -167,21 +166,21 @@ async function setupAuthUI() {
   if (regForm) {
     regForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const username = document.getElementById('reg-username').value;
-      const email = document.getElementById('reg-email').value;
-      const pwd = document.getElementById('reg-password').value;
+      const username = (document.getElementById('reg-username').value || '').trim().replace(/\s+/g, '_');
+      const email = (document.getElementById('reg-email').value || '').trim().toLowerCase();
+      const pwd = document.getElementById('reg-password').value || '';
       const role = document.getElementById('reg-role').value;
+      if (regErr) regErr.style.display = 'none';
       try {
         const res = await api.register(username, email, pwd, role);
         audio.win();
         closeModal();
         updateAuthHeader(res.user);
         showToast(`Account created for ${res.user.username}! Target track: ${role}.`);
-        window.location.reload();
       } catch (err) {
         audio.wrong();
         if (regErr) {
-          regErr.textContent = err.message;
+          regErr.textContent = err.message || 'Account creation failed.';
           regErr.style.display = 'block';
         }
       }

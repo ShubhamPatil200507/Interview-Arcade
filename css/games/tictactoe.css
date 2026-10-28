@@ -70,6 +70,30 @@
   border: 2px solid var(--color-success);
 }
 
+.ttt-cell.cell-contested {
+  outline: 3px dashed var(--color-accent);
+  background-color: var(--color-accent-surface);
+  animation: pulse-contour 1.2s infinite;
+}
+
+.ttt-cell.cell-forfeited {
+  background-color: var(--color-error-bg) !important;
+  border: 2px solid var(--color-error) !important;
+  color: var(--color-error) !important;
+  animation: ttt-shake 0.4s ease-in-out;
+}
+
+@keyframes pulse-contour {
+  0%, 100% { outline-color: var(--color-accent); }
+  50% { outline-color: transparent; }
+}
+
+@keyframes ttt-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
 .ttt-status-card {
   background-color: var(--color-surface);
   border: var(--border-width-md) solid var(--color-ink);

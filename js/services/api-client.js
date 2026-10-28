@@ -5,7 +5,30 @@
  * and seamless fallback to client-side storage if running statically.
  */
 
-const API_BASE = '/api';
+function resolveApiBase() {
+  if (typeof window === 'undefined' || !window.location) return '/api';
+  // If running on backend origin directly (port 8000)
+  if (window.location.port === '8000') {
+    return '/api';
+  }
+  // If running from file:// or a different local dev port (Live Server 5500, Vite 5173, etc.)
+  const hostname = window.location.hostname || '';
+  const isLocal = !hostname ||
+    hostname === 'localhost' ||
+    hostname === '127.0.0.1' ||
+    hostname === '0.0.0.0' ||
+    hostname.startsWith('192.168.') ||
+    hostname.startsWith('10.') ||
+    hostname.startsWith('172.') ||
+    window.location.protocol === 'file:';
+
+  if (isLocal) {
+    return 'http://127.0.0.1:8000/api';
+  }
+  return '/api';
+}
+
+const API_BASE = resolveApiBase();
 const TOKEN_KEY = 'ia_auth_token_session';
 
 class ApiClient {
@@ -55,7 +78,7 @@ class ApiClient {
       const response = await fetch(url, {
         ...options,
         headers,
-        credentials: 'same-origin'
+        credentials: 'include'
       });
 
       if (response.status === 401) {
@@ -88,17 +111,27 @@ class ApiClient {
   async register(username, email, password, target_role = 'backend') {
     const data = await this.request('/auth/register', {
       method: 'POST',
-      body: JSON.stringify({ username, email, password, target_role })
+      body: JSON.stringify({
+        username: (username || '').trim(),
+        email: (email || '').trim().toLowerCase(),
+        password,
+        target_role
+      })
     });
     this.setToken(data.access_token);
     this.currentUser = data.user;
     return data;
   }
 
-  async login(email, password) {
+  async login(identifier, password) {
     const data = await this.request('/auth/login', {
       method: 'POST',
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify({
+        email: identifier,
+        username: identifier,
+        identifier: identifier,
+        password
+      })
     });
     this.setToken(data.access_token);
     this.currentUser = data.user;

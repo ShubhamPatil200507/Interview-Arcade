@@ -42,6 +42,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ORIGINS,
+    allow_origin_regex=r"http://(localhost|127\.0\.0\.1)(:\d+)?",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -77,6 +78,7 @@ async def generic_exception_shield(request: Request, exc: Exception):
 
 # Health check endpoint
 @app.get("/api/health", tags=["System"])
+@app.get("/health", tags=["System"])
 def health_check():
     return {
         "status": "healthy",
@@ -87,6 +89,7 @@ def health_check():
 
 # Include V1 Routers
 app.include_router(auth_router, prefix=settings.API_V1_PREFIX)
+app.include_router(auth_router)  # Fallback direct /auth alias
 app.include_router(games_router, prefix=settings.API_V1_PREFIX)
 app.include_router(dashboard_router, prefix=settings.API_V1_PREFIX)
 app.include_router(learning_router, prefix=settings.API_V1_PREFIX)

@@ -4,7 +4,9 @@
  */
 
 import { OOP_QUESTIONS } from '../data/oop-questions.js';
+import { QuestionClient } from '../services/question-client.js';
 import { progress } from '../services/progress.js';
+import { mistakes } from '../services/mistakes.js';
 import { audio } from '../services/audio.js';
 
 export function createTicTacToeView(params, container) {
@@ -12,7 +14,14 @@ export function createTicTacToeView(params, container) {
   let currentPlayer = 'X'; // X is Human 1
   let gameMode = 'ai'; // 'ai' or 'pvp'
   let difficulty = 'medium'; // 'easy', 'medium', 'hard'
+  let practiceMode = 'fresh'; // 'fresh', 'revision'
+  let selectedTopic = 'all';
+  let questionPool = [];
+  let questionPoolIdx = 0;
+  let deliveryStats = null;
   let isGameOver = false;
+  let isQuizActive = false;
+  let isAIThinking = false;
   let moveCount = 0;
   let oopScore = 0;
   let oopAttempts = 0;
@@ -20,9 +29,25 @@ export function createTicTacToeView(params, container) {
   let currentQuestion = null;
   let pendingCellIndex = null;
 
-  function init() {
+  async function init() {
+    await loadQuestions();
     render();
     bindEvents();
+  }
+
+  async function loadQuestions() {
+    const topicVal = selectedTopic === 'all' ? null : selectedTopic;
+    const res = await QuestionClient.fetchQuestions({
+      gameId: 'tictactoe',
+      topic: topicVal,
+      difficulty,
+      count: 9,
+      mode: practiceMode,
+      fallbackBank: OOP_QUESTIONS
+    });
+    questionPool = res.questions || [];
+    questionPoolIdx = 0;
+    deliveryStats = res;
   }
 
   function render() {
@@ -45,6 +70,34 @@ export function createTicTacToeView(params, container) {
                 ${gameMode === 'ai' ? 'Switch to 2-Player (PvP)' : 'Switch to vs AI'}
               </button>
               <button type="button" id="reset-game-btn" class="btn btn-sm btn-subtle">Reset Round</button>
+            </div>
+          </div>
+
+          <!-- Practice Configuration Bar -->
+          <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-xs); background: var(--color-bg-subtle); padding: var(--space-xs) var(--space-sm); border-radius: var(--radius-sm); border: 1px solid var(--color-border); margin-bottom: var(--space-sm);">
+            <div style="display: flex; align-items: center; gap: var(--space-xs); flex-wrap: wrap;">
+              <span style="font-size: var(--font-size-xs); font-weight: bold; color: var(--color-ink-muted);">Topic:</span>
+              <select id="ttt-topic-select" style="font-size: var(--font-size-xs); padding: 2px 6px; border-radius: var(--radius-xs); border: 1px solid var(--color-border); background: var(--color-surface);">
+                <option value="all" ${selectedTopic === 'all' ? 'selected' : ''}>All OOP Topics</option>
+                <option value="Encapsulation" ${selectedTopic === 'Encapsulation' ? 'selected' : ''}>Encapsulation</option>
+                <option value="Inheritance" ${selectedTopic === 'Inheritance' ? 'selected' : ''}>Inheritance</option>
+                <option value="Polymorphism" ${selectedTopic === 'Polymorphism' ? 'selected' : ''}>Polymorphism</option>
+                <option value="Constructors" ${selectedTopic === 'Constructors' ? 'selected' : ''}>Constructors</option>
+                <option value="SOLID" ${selectedTopic === 'SOLID' ? 'selected' : ''}>SOLID Principles</option>
+                <option value="Design Patterns" ${selectedTopic === 'Design Patterns' ? 'selected' : ''}>Design Patterns</option>
+              </select>
+
+              <span style="font-size: var(--font-size-xs); font-weight: bold; color: var(--color-ink-muted); margin-left: 4px;">Practice:</span>
+              <div class="difficulty-selector" role="group" aria-label="Practice Mode">
+                <button type="button" class="diff-btn ${practiceMode === 'fresh' ? 'active' : ''}" data-practice="fresh">Fresh (Unseen)</button>
+                <button type="button" class="diff-btn ${practiceMode === 'revision' ? 'active' : ''}" data-practice="revision">Revision (Mistakes)</button>
+              </div>
+            </div>
+
+            <div>
+              <span class="badge ${deliveryStats?.isGenerated ? 'badge-accent' : 'badge-subtle'}" style="font-size: var(--font-size-xs);">
+                ${deliveryStats ? (deliveryStats.isGenerated ? `✨ AI Questions Active (${deliveryStats.generatedCount} generated)` : `🏛️ Verified Bank (${deliveryStats.deliveredCount} available)`) : '⚡ Adaptive Delivery'}
+              </span>
             </div>
           </div>
 
@@ -97,13 +150,33 @@ export function createTicTacToeView(params, container) {
   }
 
   function bindEvents() {
-    container.querySelectorAll('.diff-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
+    container.querySelectorAll('.diff-btn[data-diff]').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
         difficulty = e.target.getAttribute('data-diff');
         audio.click();
+        await loadQuestions();
         resetGame();
       });
     });
+
+    container.querySelectorAll('.diff-btn[data-practice]').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        practiceMode = e.target.getAttribute('data-practice');
+        audio.click();
+        await loadQuestions();
+        resetGame();
+      });
+    });
+
+    const topicSelect = container.querySelector('#ttt-topic-select');
+    if (topicSelect) {
+      topicSelect.addEventListener('change', async (e) => {
+        selectedTopic = e.target.value;
+        audio.click();
+        await loadQuestions();
+        resetGame();
+      });
+    }
 
     const toggleModeBtn = container.querySelector('#toggle-mode-btn');
     if (toggleModeBtn) {
@@ -128,7 +201,8 @@ export function createTicTacToeView(params, container) {
   function bindBoardClicks() {
     container.querySelectorAll('.ttt-cell').forEach(cell => {
       cell.addEventListener('click', (e) => {
-        if (isGameOver) return;
+        if (isGameOver || isQuizActive || isAIThinking) return;
+        if (gameMode === 'ai' && currentPlayer !== 'X') return;
         const index = parseInt(e.currentTarget.getAttribute('data-index'), 10);
         if (board[index] !== null) return;
 
@@ -139,24 +213,41 @@ export function createTicTacToeView(params, container) {
   }
 
   function triggerOOPChallenge(cellIndex) {
+    if (isGameOver || isQuizActive || isAIThinking) return;
     pendingCellIndex = cellIndex;
-    const questionsForDiff = OOP_QUESTIONS.filter(q => q.difficulty === difficulty);
-    const pool = questionsForDiff.length > 0 ? questionsForDiff : OOP_QUESTIONS;
-    currentQuestion = pool[Math.floor(Math.random() * pool.length)];
+    isQuizActive = true;
+    updateBoardUI();
+
+    const cellEl = container.querySelector(`.ttt-cell[data-index="${cellIndex}"]`);
+    if (cellEl) cellEl.classList.add('cell-contested');
+
+    if (questionPool && questionPool.length > 0) {
+      currentQuestion = questionPool[questionPoolIdx % questionPool.length];
+      questionPoolIdx += 1;
+    } else {
+      const questionsForDiff = OOP_QUESTIONS.filter(q => q.difficulty === difficulty);
+      const pool = questionsForDiff.length > 0 ? questionsForDiff : OOP_QUESTIONS;
+      currentQuestion = pool[Math.floor(Math.random() * pool.length)];
+    }
 
     const quizDrawer = container.querySelector('#quiz-drawer');
     quizDrawer.style.display = 'block';
+    const qTitle = currentQuestion.question || currentQuestion.prompt || '';
+    const qTopic = currentQuestion.topic || 'OOP Concept';
+    const qDiff = (currentQuestion.difficulty || difficulty).toUpperCase();
+    const qOpts = currentQuestion.options || [];
+
     quizDrawer.innerHTML = `
       <div class="ttt-quiz-card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-xs);">
-          <span class="badge badge-accent">${currentQuestion.topic}</span>
+          <span class="badge badge-accent">${qTopic}</span>
           <span class="badge ${difficulty === 'hard' ? 'badge-hard' : difficulty === 'medium' ? 'badge-medium' : 'badge-easy'}">
-            ${currentQuestion.difficulty.toUpperCase()}
+            ${qDiff}
           </span>
         </div>
-        <h4 style="margin-bottom: var(--space-sm);">${currentQuestion.question}</h4>
+        <h4 style="margin-bottom: var(--space-sm);">${qTitle}</h4>
         <div>
-          ${currentQuestion.options.map((opt, i) => `
+          ${qOpts.map((opt, i) => `
             <button type="button" class="quiz-option-btn" data-opt-idx="${i}">
               <strong>${String.fromCharCode(65 + i)}.</strong> ${opt}
             </button>
@@ -175,35 +266,127 @@ export function createTicTacToeView(params, container) {
     quizDrawer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
-  function handleQuizAnswer(selectedIdx) {
+  async function handleQuizAnswer(selectedIdx) {
     oopAttempts += 1;
-    const isCorrect = selectedIdx === currentQuestion.correctIndex;
+    const verification = await QuestionClient.verifyAnswer({
+      gameId: 'tictactoe',
+      challengeId: currentQuestion.id,
+      selectedOptionIndex: selectedIdx,
+      localQuestion: currentQuestion
+    });
+    const isCorrect = verification.isCorrect;
     const quizDrawer = container.querySelector('#quiz-drawer');
 
     if (isCorrect) {
       oopScore += (difficulty === 'hard' ? 30 : difficulty === 'medium' ? 20 : 10);
       audio.correct();
+
+      quizDrawer.innerHTML = `
+        <div class="ttt-quiz-card" style="border-color: var(--color-success); background: var(--color-surface);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-xs);">
+            <span class="badge badge-success">✓ Correct Answer</span>
+            <span class="badge badge-accent">+${difficulty === 'hard' ? 30 : difficulty === 'medium' ? 20 : 10} pts</span>
+          </div>
+          <h4 style="color: var(--color-success); margin-bottom: var(--space-xs);">
+            Move Earned! Placing Mark on Cell...
+          </h4>
+          <p style="font-size: var(--font-size-sm); margin-bottom: var(--space-md);">${verification.explanation || currentQuestion.explanation || ''}</p>
+          <button type="button" id="confirm-move-btn" class="btn btn-primary btn-sm">Place Mark on Board</button>
+        </div>
+      `;
+
+      container.querySelector('#quiz-score-val').textContent = oopScore;
+
+      const confirmBtn = quizDrawer.querySelector('#confirm-move-btn');
+      confirmBtn.addEventListener('click', () => {
+        quizDrawer.style.display = 'none';
+        isQuizActive = false;
+        const targetCell = pendingCellIndex;
+        pendingCellIndex = null;
+        if (targetCell !== null) {
+          executePlayerMove(targetCell);
+        }
+      });
     } else {
       audio.wrong();
+
+      // Record mistake in candidate Mistake Notebook for targeted revision
+      mistakes.recordMistake({
+        gameId: 'tictactoe',
+        challengeId: currentQuestion.id || `oop_${Date.now()}`,
+        category: 'OOP Principles',
+        question: currentQuestion.question || currentQuestion.prompt || 'OOP Concept',
+        userAnswer: currentQuestion.options ? currentQuestion.options[selectedIdx] : String(selectedIdx),
+        correctAnswer: currentQuestion.options ? currentQuestion.options[currentQuestion.correctIndex ?? 0] : 'Correct Answer',
+        explanation: verification.explanation || currentQuestion.explanation || 'Review OOP fundamentals.',
+        timestamp: Date.now()
+      });
+
+      // STRICTLY FORBID PLACING MOVE:
+      // Clear pending cell immediately so that this cell CANNOT receive the player's mark.
+      const forfeitedCell = pendingCellIndex;
+      pendingCellIndex = null;
+
+      // Provide clear tactile and visual feedback on the forfeited cell
+      if (forfeitedCell !== null) {
+        const cellEl = container.querySelector(`.ttt-cell[data-index="${forfeitedCell}"]`);
+        if (cellEl) {
+          cellEl.classList.remove('cell-contested');
+          cellEl.classList.add('cell-forfeited');
+          setTimeout(() => cellEl?.classList.remove('cell-forfeited'), 1200);
+        }
+      }
+
+      quizDrawer.innerHTML = `
+        <div class="ttt-quiz-card" style="border-color: var(--color-error); background: var(--color-error-bg);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-xs);">
+            <span class="badge" style="background: var(--color-error); color: white;">✗ Incorrect Answer</span>
+            <span class="badge badge-subtle">Move Forfeited</span>
+          </div>
+          <h4 style="color: var(--color-error); margin-bottom: var(--space-xs);">
+            Move Forfeited! You Cannot Place Your Mark.
+          </h4>
+          <p style="font-size: var(--font-size-sm); color: var(--color-ink); margin-bottom: var(--space-md); line-height: 1.5;">
+            Under tournament rules, giving a wrong answer forfeits your move. This cell remains unmarked and your turn passes directly to the opponent.<br>
+            <span style="display: block; margin-top: 6px; font-size: var(--font-size-xs); color: var(--color-ink-muted); background: var(--color-surface); padding: var(--space-xs) var(--space-sm); border-radius: var(--radius-xs); border: 1px solid var(--color-border);">
+              <strong>Key Explanation:</strong> ${verification.explanation || currentQuestion.explanation || 'Make sure to review OOP core concepts.'}
+            </span>
+          </p>
+          <div style="display: flex; gap: var(--space-xs); align-items: center;">
+            <button type="button" id="forfeit-move-btn" class="btn btn-sm btn-primary" style="background: var(--color-error); border-color: var(--color-error); color: white;">
+              Pass Turn to ${gameMode === 'ai' ? 'Arcade AI' : 'Opponent'}
+            </button>
+            <span style="font-size: var(--font-size-xs); color: var(--color-ink-faint);">Logged to Mistake Notebook</span>
+          </div>
+        </div>
+      `;
+
+      container.querySelector('#quiz-score-val').textContent = oopScore;
+
+      const forfeitBtn = quizDrawer.querySelector('#forfeit-move-btn');
+      forfeitBtn.addEventListener('click', () => {
+        quizDrawer.style.display = 'none';
+        isQuizActive = false;
+        pendingCellIndex = null;
+        updateBoardUI();
+
+        // Pass turn directly to opponent / AI without marking the board
+        if (gameMode === 'ai') {
+          currentPlayer = 'O';
+          isAIThinking = true;
+          updateStatusTurn();
+          setTimeout(() => {
+            executeAIMove();
+            isAIThinking = false;
+            updateBoardUI();
+          }, 500);
+        } else {
+          currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+          updateStatusTurn();
+          updateBoardUI();
+        }
+      });
     }
-
-    quizDrawer.innerHTML = `
-      <div class="ttt-quiz-card" style="border-color: ${isCorrect ? 'var(--color-success)' : 'var(--color-error)'};">
-        <h4 style="color: ${isCorrect ? 'var(--color-success)' : 'var(--color-error)'}; margin-bottom: var(--space-xs);">
-          ${isCorrect ? '✓ Correct! Bonus Points Awarded!' : '✗ Incorrect Concept'}
-        </h4>
-        <p style="font-size: var(--font-size-sm); margin-bottom: var(--space-md);">${currentQuestion.explanation}</p>
-        <button type="button" id="confirm-move-btn" class="btn btn-primary btn-sm">Confirm Board Move</button>
-      </div>
-    `;
-
-    container.querySelector('#quiz-score-val').textContent = oopScore;
-
-    const confirmBtn = quizDrawer.querySelector('#confirm-move-btn');
-    confirmBtn.addEventListener('click', () => {
-      quizDrawer.style.display = 'none';
-      executePlayerMove(pendingCellIndex);
-    });
   }
 
   function executePlayerMove(index) {
@@ -374,10 +557,13 @@ export function createTicTacToeView(params, container) {
     container.querySelectorAll('.ttt-cell').forEach(cell => {
       const idx = parseInt(cell.getAttribute('data-index'), 10);
       cell.textContent = board[idx] || '';
-      cell.classList.remove('cell-x', 'cell-o');
+      cell.classList.remove('cell-x', 'cell-o', 'cell-contested');
+      if (idx === pendingCellIndex && isQuizActive) {
+        cell.classList.add('cell-contested');
+      }
       if (board[idx] === 'X') cell.classList.add('cell-x');
       if (board[idx] === 'O') cell.classList.add('cell-o');
-      if (board[idx] !== null || isGameOver) {
+      if (board[idx] !== null || isGameOver || isQuizActive || isAIThinking) {
         cell.disabled = true;
       } else {
         cell.disabled = false;
@@ -450,6 +636,8 @@ export function createTicTacToeView(params, container) {
     board = Array(9).fill(null);
     currentPlayer = 'X';
     isGameOver = false;
+    isQuizActive = false;
+    isAIThinking = false;
     moveCount = 0;
     oopScore = 0;
     oopAttempts = 0;

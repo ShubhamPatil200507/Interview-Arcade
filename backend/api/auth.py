@@ -4,6 +4,7 @@ Handles user registration, login with bcrypt verification, and token issuance.
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status, Response
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from backend.api.deps import get_db, get_current_user
@@ -21,13 +22,16 @@ def register(
     db: Session = Depends(get_db)
 ):
     """Registers a new student account, hashes the password, and returns an access token."""
+    username = payload.username.strip()
+    email = payload.email.strip().lower()
+
     # Check if username or email is already registered
     existing_user = db.query(User).filter(
-        (User.email == payload.email) | (User.username == payload.username)
+        (func.lower(User.email) == email) | (func.lower(User.username) == username.lower())
     ).first()
 
     if existing_user:
-        if existing_user.email == payload.email:
+        if existing_user.email.lower() == email:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="A student account with this email address already exists."
@@ -42,8 +46,8 @@ def register(
     hashed_pwd = hash_password(payload.password)
 
     new_user = User(
-        username=payload.username,
-        email=payload.email,
+        username=username,
+        email=email,
         hashed_password=hashed_pwd,
         target_role=payload.target_role or "backend"
     )
@@ -77,7 +81,17 @@ def login(
     db: Session = Depends(get_db)
 ):
     """Authenticates credentials using bcrypt and returns an access token."""
-    user = db.query(User).filter(User.email == payload.email).first()
+    login_id = (payload.email or payload.username or payload.identifier or "").strip().lower()
+
+    if not login_id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Please provide your username or email address."
+        )
+
+    user = db.query(User).filter(
+        (func.lower(User.email) == login_id) | (func.lower(User.username) == login_id)
+    ).first()
 
     if not user or not verify_password(payload.password, user.hashed_password):
         raise HTTPException(

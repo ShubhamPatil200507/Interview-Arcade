@@ -1,33 +1,50 @@
 /**
  * Interview Arcade — Game 3: Quantitative Aptitude Quiz
- * Timed/untimed placement assessment with hints, math explanations, and session logging.
+ * Placement assessment standards with dynamic question generation,
+ * repetition elimination, formula hints, and mistake revision.
  */
 
 import { APTITUDE_QUESTIONS } from '../data/aptitude-bank.js';
+import { QuestionClient } from '../services/question-client.js';
 import { progress } from '../services/progress.js';
+import { mistakes } from '../services/mistakes.js';
 import { audio } from '../services/audio.js';
 
 export function createAptitudeView(params, container) {
   let difficulty = 'all'; // 'all', 'easy', 'medium', 'hard'
+  let practiceMode = 'fresh'; // 'fresh', 'revision'
+  let selectedCategory = 'all';
   let questions = [];
   let currentIndex = 0;
   let score = 0;
   let correctCount = 0;
-  let userAnswers = []; // { question, selectedIdx, isCorrect }
+  let userAnswers = []; // { question, selectedIdx, isCorrect, explanation }
   let showHint = false;
   let timerInterval = null;
   let remainingSeconds = 60;
   let isTimed = false;
   let isComplete = false;
   let sessionStartTime = Date.now();
+  let deliveryStats = null;
 
-  function init() {
-    setupQuiz();
+  const CATEGORIES = [
+    'all',
+    'Number Series',
+    'Percentages',
+    'Logical Reasoning',
+    'Ratios & Averages',
+    'Time & Work',
+    'Probability & Permutations',
+    'Profit & Loss'
+  ];
+
+  async function init() {
+    await loadQuestions();
     render();
     bindEvents();
   }
 
-  function setupQuiz() {
+  async function loadQuestions() {
     clearInterval(timerInterval);
     sessionStartTime = Date.now();
     currentIndex = 0;
@@ -37,13 +54,32 @@ export function createAptitudeView(params, container) {
     showHint = false;
     isComplete = false;
 
-    let pool = [...APTITUDE_QUESTIONS];
-    if (difficulty !== 'all') {
-      pool = pool.filter(q => q.difficulty === difficulty);
+    const diffFilter = difficulty === 'all' ? null : difficulty;
+    const catFilter = selectedCategory === 'all' ? null : selectedCategory;
+
+    // Filter fallback bank by category if selected
+    let bank = [...APTITUDE_QUESTIONS];
+    if (catFilter) {
+      bank = bank.filter(q => q.category === catFilter);
+      if (bank.length === 0) bank = [...APTITUDE_QUESTIONS];
     }
-    // Shuffle pool and select up to 5 questions
-    pool.sort(() => Math.random() - 0.5);
-    questions = pool.slice(0, 5);
+
+    const res = await QuestionClient.fetchQuestions({
+      gameId: 'aptitude',
+      topic: catFilter,
+      difficulty: diffFilter,
+      count: 5,
+      mode: practiceMode,
+      fallbackBank: bank
+    });
+
+    questions = res.questions || [];
+    deliveryStats = res;
+
+    // Ensure questions have options and correct indices
+    if (questions.length === 0) {
+      questions = [...APTITUDE_QUESTIONS].slice(0, 5);
+    }
 
     if (isTimed) {
       remainingSeconds = questions.length * 30; // 30s per question
@@ -81,6 +117,11 @@ export function createAptitudeView(params, container) {
       return;
     }
 
+    const qTitle = currentQ.question || currentQ.prompt || '';
+    const qCat = currentQ.category || currentQ.topic || 'Quantitative Aptitude';
+    const qDiff = (currentQ.difficulty || difficulty).toUpperCase();
+    const qOptions = currentQ.options || [];
+
     container.innerHTML = `
       <div class="content-container">
         <div class="game-frame">
@@ -92,7 +133,7 @@ export function createAptitudeView(params, container) {
             </div>
             <div class="game-controls-bar">
               <div class="difficulty-selector" role="group" aria-label="Game Difficulty">
-                <button type="button" class="diff-btn ${difficulty === 'all' ? 'active' : ''}" data-diff="all">All Levels</button>
+                <button type="button" class="diff-btn ${difficulty === 'all' ? 'active' : ''}" data-diff="all">All</button>
                 <button type="button" class="diff-btn ${difficulty === 'easy' ? 'active' : ''}" data-diff="easy">Easy</button>
                 <button type="button" class="diff-btn ${difficulty === 'medium' ? 'active' : ''}" data-diff="medium">Medium</button>
                 <button type="button" class="diff-btn ${difficulty === 'hard' ? 'active' : ''}" data-diff="hard">Hard</button>
@@ -104,13 +145,37 @@ export function createAptitudeView(params, container) {
             </div>
           </div>
 
+          <!-- Practice Configuration Bar -->
+          <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-xs); background: var(--color-bg-subtle); padding: var(--space-xs) var(--space-sm); border-radius: var(--radius-sm); border: 1px solid var(--color-border); margin-bottom: var(--space-sm);">
+            <div style="display: flex; align-items: center; gap: var(--space-xs); flex-wrap: wrap;">
+              <span style="font-size: var(--font-size-xs); font-weight: bold; color: var(--color-ink-muted);">Topic:</span>
+              <select id="apt-category-select" style="font-size: var(--font-size-xs); padding: 2px 6px; border-radius: var(--radius-xs); border: 1px solid var(--color-border); background: var(--color-surface);">
+                ${CATEGORIES.map(c => `
+                  <option value="${c}" ${selectedCategory === c ? 'selected' : ''}>${c === 'all' ? 'All Math Categories' : c}</option>
+                `).join('')}
+              </select>
+
+              <span style="font-size: var(--font-size-xs); font-weight: bold; color: var(--color-ink-muted); margin-left: var(--space-xs);">Mode:</span>
+              <div class="difficulty-selector" style="margin: 0;">
+                <button type="button" class="diff-btn ${practiceMode === 'fresh' ? 'active' : ''}" data-practice="fresh">Fresh (Unseen)</button>
+                <button type="button" class="diff-btn ${practiceMode === 'revision' ? 'active' : ''}" data-practice="revision">Revision (Mistakes)</button>
+              </div>
+            </div>
+
+            <div>
+              <span class="badge ${deliveryStats?.isGenerated ? 'badge-accent' : 'badge-subtle'}" style="font-size: var(--font-size-xs);">
+                ${deliveryStats ? (deliveryStats.isGenerated ? `✨ AI Questions Active (${deliveryStats.generatedCount} generated)` : `🏛️ Verified Bank (${deliveryStats.deliveredCount} available)`) : '⚡ Adaptive Delivery'}
+              </span>
+            </div>
+          </div>
+
           <!-- Question Card -->
           <div class="aptitude-card">
             <div class="apt-question-header">
               <div>
-                <span class="badge badge-accent">${currentQ.category}</span>
-                <span class="badge ${currentQ.difficulty === 'hard' ? 'badge-hard' : currentQ.difficulty === 'medium' ? 'badge-medium' : 'badge-easy'}">
-                  ${currentQ.difficulty.toUpperCase()}
+                <span class="badge badge-accent">${qCat}</span>
+                <span class="badge ${qDiff === 'HARD' ? 'badge-hard' : qDiff === 'MEDIUM' ? 'badge-medium' : 'badge-easy'}">
+                  ${qDiff}
                 </span>
               </div>
               <span style="font-family: var(--font-mono); font-size: var(--font-size-sm); color: var(--color-ink-muted);">
@@ -118,9 +183,9 @@ export function createAptitudeView(params, container) {
               </span>
             </div>
 
-            <div class="apt-question-text">${currentQ.question}</div>
+            <div class="apt-question-text">${qTitle}</div>
 
-            ${showHint ? `
+            ${showHint && currentQ.hint ? `
               <div class="apt-hint-box" role="note">
                 <strong>💡 Hint:</strong> ${currentQ.hint}
               </div>
@@ -128,7 +193,7 @@ export function createAptitudeView(params, container) {
 
             <!-- Options Grid -->
             <div class="apt-options-grid">
-              ${currentQ.options.map((opt, i) => `
+              ${qOptions.map((opt, i) => `
                 <button type="button" class="apt-option-btn" data-opt-idx="${i}">
                   <span class="badge" style="background-color: var(--color-surface);">${String.fromCharCode(65 + i)}</span>
                   <span>${opt}</span>
@@ -187,20 +252,20 @@ export function createAptitudeView(params, container) {
                     ${ans.isCorrect ? '✓ Correct' : '✗ Incorrect'}
                   </span>
                   <span style="font-family: var(--font-mono); font-size: var(--font-size-xs); color: var(--color-ink-muted);">
-                    ${ans.question.category}
+                    ${ans.question.category || ans.question.topic || 'Aptitude'}
                   </span>
                 </div>
-                <p><strong>${idx + 1}. ${ans.question.question}</strong></p>
+                <p><strong>${idx + 1}. ${ans.question.question || ans.question.prompt}</strong></p>
                 <p style="font-size: var(--font-size-sm); margin-top: var(--space-2xs);">
-                  <strong>Your Answer:</strong> ${ans.question.options[ans.selectedIdx] || 'None (Timed Out)'}
+                  <strong>Your Answer:</strong> ${ans.question.options ? (ans.question.options[ans.selectedIdx] || 'None (Timed Out)') : ans.selectedIdx}
                 </p>
                 ${!ans.isCorrect ? `
                   <p style="font-size: var(--font-size-sm); color: var(--color-success);">
-                    <strong>Correct Answer:</strong> ${ans.question.options[ans.question.correctIndex]}
+                    <strong>Correct Answer:</strong> ${ans.correctAnswerText || (ans.question.options ? ans.question.options[ans.question.correctIndex] : 'Verified Correct Answer')}
                   </p>
                 ` : ''}
                 <div class="notice-box notice-info" style="margin-top: var(--space-xs); font-size: var(--font-size-xs); padding: var(--space-xs) var(--space-sm);">
-                  <span><strong>Explanation:</strong> ${ans.question.explanation}</span>
+                  <span><strong>Explanation:</strong> ${ans.explanation || ans.question.explanation || 'Step-by-step mathematical reasoning verified.'}</span>
                 </div>
               </div>
             `).join('')}
@@ -211,8 +276,8 @@ export function createAptitudeView(params, container) {
 
     const playAgainBtn = container.querySelector('#play-apt-again');
     if (playAgainBtn) {
-      playAgainBtn.addEventListener('click', () => {
-        setupQuiz();
+      playAgainBtn.addEventListener('click', async () => {
+        await loadQuestions();
         render();
         bindEvents();
       });
@@ -220,22 +285,43 @@ export function createAptitudeView(params, container) {
   }
 
   function bindEvents() {
-    container.querySelectorAll('.diff-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
+    container.querySelectorAll('.diff-btn[data-diff]').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
         difficulty = e.target.getAttribute('data-diff');
         audio.click();
-        setupQuiz();
+        await loadQuestions();
         render();
         bindEvents();
       });
     });
 
+    container.querySelectorAll('.diff-btn[data-practice]').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        practiceMode = e.target.getAttribute('data-practice');
+        audio.click();
+        await loadQuestions();
+        render();
+        bindEvents();
+      });
+    });
+
+    const categorySelect = container.querySelector('#apt-category-select');
+    if (categorySelect) {
+      categorySelect.addEventListener('change', async (e) => {
+        selectedCategory = e.target.value;
+        audio.click();
+        await loadQuestions();
+        render();
+        bindEvents();
+      });
+    }
+
     const toggleTimerBtn = container.querySelector('#toggle-timer-btn');
     if (toggleTimerBtn) {
-      toggleTimerBtn.addEventListener('click', () => {
+      toggleTimerBtn.addEventListener('click', async () => {
         isTimed = !isTimed;
         audio.click();
-        setupQuiz();
+        await loadQuestions();
         render();
         bindEvents();
       });
@@ -243,9 +329,9 @@ export function createAptitudeView(params, container) {
 
     const restartBtn = container.querySelector('#restart-apt-btn');
     if (restartBtn) {
-      restartBtn.addEventListener('click', () => {
+      restartBtn.addEventListener('click', async () => {
         audio.click();
-        setupQuiz();
+        await loadQuestions();
         render();
         bindEvents();
       });
@@ -262,30 +348,52 @@ export function createAptitudeView(params, container) {
     }
 
     container.querySelectorAll('.apt-option-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
+      btn.addEventListener('click', async (e) => {
         const selectedIdx = parseInt(e.currentTarget.getAttribute('data-opt-idx'), 10);
-        handleAnswer(selectedIdx);
+        await handleAnswer(selectedIdx);
       });
     });
   }
 
-  function handleAnswer(selectedIdx) {
+  async function handleAnswer(selectedIdx) {
     const currentQ = questions[currentIndex];
-    const isCorrect = selectedIdx === currentQ.correctIndex;
+    const verification = await QuestionClient.verifyAnswer({
+      gameId: 'aptitude',
+      challengeId: currentQ.id,
+      selectedOptionIndex: selectedIdx,
+      localQuestion: currentQ
+    });
+
+    const isCorrect = verification.isCorrect;
+    const explanation = verification.explanation || currentQ.explanation || '';
+    const correctAnswerText = verification.correctAnswer || (currentQ.options ? currentQ.options[currentQ.correctIndex] : '');
 
     userAnswers.push({
       question: currentQ,
       selectedIdx,
-      isCorrect
+      isCorrect,
+      explanation,
+      correctAnswerText
     });
 
     if (isCorrect) {
       correctCount += 1;
-      const pts = currentQ.difficulty === 'hard' ? 30 : currentQ.difficulty === 'medium' ? 20 : 10;
+      const pts = (currentQ.difficulty || difficulty) === 'hard' ? 30 : (currentQ.difficulty || difficulty) === 'medium' ? 20 : 10;
       score += pts;
       audio.correct();
     } else {
       audio.wrong();
+      // Record in candidate Mistake Notebook
+      mistakes.recordMistake({
+        gameId: 'aptitude',
+        challengeId: currentQ.id || `apt_${Date.now()}`,
+        category: currentQ.category || currentQ.topic || 'Quantitative Aptitude',
+        question: currentQ.question || currentQ.prompt || 'Math Problem',
+        userAnswer: currentQ.options ? currentQ.options[selectedIdx] : String(selectedIdx),
+        correctAnswer: correctAnswerText || (currentQ.options ? currentQ.options[currentQ.correctIndex ?? 0] : 'Correct Solution'),
+        explanation: explanation || 'Review quantitative formula.',
+        timestamp: Date.now()
+      });
     }
 
     currentIndex += 1;

@@ -5,12 +5,17 @@
  */
 
 import { INTERVIEW_SCENARIOS } from '../data/interview-scenarios.js';
+import { QuestionClient } from '../services/question-client.js';
 import { progress } from '../services/progress.js';
 import { audio } from '../services/audio.js';
 import { mistakes } from '../services/mistakes.js';
 import { api } from '../services/api-client.js';
 
 export function createInterviewView(params, container) {
+  let scenarios = [...INTERVIEW_SCENARIOS];
+  let practiceMode = 'fresh'; // 'fresh', 'revision'
+  let selectedType = 'all'; // 'all', 'behavioral', 'system_design'
+  let deliveryStats = null;
   let currentIndex = 0;
   let selectedOptionIndex = null;
   let isAnswerSubmitted = false;
@@ -22,7 +27,8 @@ export function createInterviewView(params, container) {
   let loggedMistakes = [];
   let lastAiEvaluation = null;
 
-  function init() {
+  async function init() {
+    await loadScenarios();
     currentIndex = 0;
     selectedOptionIndex = null;
     isAnswerSubmitted = false;
@@ -34,9 +40,29 @@ export function createInterviewView(params, container) {
     renderScenario();
   }
 
+  async function loadScenarios() {
+    let fallback = [...INTERVIEW_SCENARIOS];
+    if (selectedType !== 'all') {
+      fallback = fallback.filter(s => s.type === selectedType);
+      if (fallback.length === 0) fallback = [...INTERVIEW_SCENARIOS];
+    }
+    const res = await QuestionClient.fetchQuestions({
+      gameId: 'interview',
+      topic: selectedType === 'all' ? null : selectedType,
+      count: 4,
+      mode: practiceMode,
+      fallbackBank: fallback
+    });
+    scenarios = res.questions || fallback;
+    deliveryStats = res;
+    if (!scenarios || scenarios.length === 0) {
+      scenarios = fallback;
+    }
+  }
+
   function startTimer() {
     stopTimer();
-    const currentScenario = INTERVIEW_SCENARIOS[currentIndex];
+    const currentScenario = scenarios[currentIndex] || scenarios[0];
     timeLeft = currentScenario.timeLimitSeconds || 120;
     updateTimerDisplay();
 
@@ -81,8 +107,8 @@ export function createInterviewView(params, container) {
   }
 
   function renderScenario() {
-    const scenario = INTERVIEW_SCENARIOS[currentIndex];
-    const totalCount = INTERVIEW_SCENARIOS.length;
+    const scenario = scenarios[currentIndex] || scenarios[0];
+    const totalCount = scenarios.length;
     selectedOptionIndex = null;
     isAnswerSubmitted = false;
     lastAiEvaluation = null;
@@ -90,7 +116,7 @@ export function createInterviewView(params, container) {
     container.innerHTML = `
       <div class="content-container interview-chamber">
         <!-- Header Bar -->
-        <div class="game-header-bar" style="margin-bottom: var(--space-md);">
+        <div class="game-header-bar" style="margin-bottom: var(--space-xs);">
           <div class="game-title-group">
             <span class="badge badge-accent">Mock Interview</span>
             <h2>Behavioral & System Design Simulator</h2>
@@ -99,6 +125,30 @@ export function createInterviewView(params, container) {
             <span id="scenario-timer" class="badge" aria-label="Time Remaining">⏱️ 2:00</span>
             <span class="badge badge-subtle">Scenario ${currentIndex + 1} of ${totalCount}</span>
             <button type="button" id="restart-interview-btn" class="btn btn-sm btn-subtle">Restart</button>
+          </div>
+        </div>
+
+        <!-- Practice Configuration Bar -->
+        <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-xs); background: var(--color-bg-subtle); padding: var(--space-xs) var(--space-sm); border-radius: var(--radius-sm); border: 1px solid var(--color-border); margin-bottom: var(--space-sm);">
+          <div style="display: flex; align-items: center; gap: var(--space-xs); flex-wrap: wrap;">
+            <span style="font-size: var(--font-size-xs); font-weight: bold; color: var(--color-ink-muted);">Round Type:</span>
+            <select id="sim-type-select" style="font-size: var(--font-size-xs); padding: 2px 6px; border-radius: var(--radius-xs); border: 1px solid var(--color-border); background: var(--color-surface);">
+              <option value="all" ${selectedType === 'all' ? 'selected' : ''}>All Scenarios</option>
+              <option value="behavioral" ${selectedType === 'behavioral' ? 'selected' : ''}>STAR Behavioral</option>
+              <option value="system_design" ${selectedType === 'system_design' ? 'selected' : ''}>System Design</option>
+            </select>
+
+            <span style="font-size: var(--font-size-xs); font-weight: bold; color: var(--color-ink-muted); margin-left: var(--space-xs);">Mode:</span>
+            <div class="difficulty-selector" style="margin: 0;">
+              <button type="button" class="diff-btn ${practiceMode === 'fresh' ? 'active' : ''}" data-practice="fresh">Fresh (Unseen)</button>
+              <button type="button" class="diff-btn ${practiceMode === 'revision' ? 'active' : ''}" data-practice="revision">Revision (Mistakes)</button>
+            </div>
+          </div>
+
+          <div>
+            <span class="badge ${deliveryStats?.isGenerated ? 'badge-accent' : 'badge-subtle'}" style="font-size: var(--font-size-xs);">
+              ${deliveryStats ? (deliveryStats.isGenerated ? `✨ AI Scenarios Active (${deliveryStats.generatedCount} generated)` : `🏛️ Verified Bank (${deliveryStats.deliveredCount} available)`) : '⚡ Adaptive Delivery'}
+            </span>
           </div>
         </div>
 
@@ -207,7 +257,7 @@ export function createInterviewView(params, container) {
         btn.setAttribute('aria-checked', 'true');
 
         // Prefill draft text if empty or previous option text
-        const scenario = INTERVIEW_SCENARIOS[currentIndex];
+        const scenario = scenarios[currentIndex] || scenarios[0];
         const chosen = scenario.options[idx];
         if (draftTextarea && chosen) {
           draftTextarea.value = chosen.text;
@@ -220,6 +270,27 @@ export function createInterviewView(params, container) {
       });
     });
 
+    const typeSelect = container.querySelector('#sim-type-select');
+    if (typeSelect) {
+      typeSelect.addEventListener('change', async (e) => {
+        selectedType = e.target.value;
+        audio.click();
+        await loadScenarios();
+        currentIndex = 0;
+        renderScenario();
+      });
+    }
+
+    container.querySelectorAll('.diff-btn[data-practice]').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        practiceMode = e.target.getAttribute('data-practice');
+        audio.click();
+        await loadScenarios();
+        currentIndex = 0;
+        renderScenario();
+      });
+    });
+
     if (submitBtn) {
       submitBtn.addEventListener('click', () => {
         if (!isAnswerSubmitted) {
@@ -229,9 +300,11 @@ export function createInterviewView(params, container) {
     }
 
     if (restartBtn) {
-      restartBtn.addEventListener('click', () => {
+      restartBtn.addEventListener('click', async () => {
         audio.click();
-        init();
+        await loadScenarios();
+        currentIndex = 0;
+        renderScenario();
       });
     }
   }
@@ -239,7 +312,7 @@ export function createInterviewView(params, container) {
   async function submitAnswer(isTimeout = false) {
     stopTimer();
     isAnswerSubmitted = true;
-    const scenario = INTERVIEW_SCENARIOS[currentIndex];
+    const scenario = scenarios[currentIndex] || scenarios[0];
     const draftTextarea = container.querySelector('#candidate-draft-text');
     const userText = draftTextarea ? draftTextarea.value.trim() : '';
 
@@ -403,7 +476,7 @@ export function createInterviewView(params, container) {
             <strong>Recommended Next:</strong> ${aiEval.recommended_next_action}
           </div>
           <button type="button" id="next-scenario-btn" class="btn btn-primary">
-            ${currentIndex + 1 < INTERVIEW_SCENARIOS.length ? 'Next Scenario ➔' : 'Complete Interview & View Scorecard ➔'}
+            ${currentIndex + 1 < scenarios.length ? 'Next Scenario ➔' : 'Complete Interview & View Scorecard ➔'}
           </button>
         </div>
       </div>
@@ -414,7 +487,7 @@ export function createInterviewView(params, container) {
       nextBtn.focus();
       nextBtn.addEventListener('click', () => {
         audio.click();
-        if (currentIndex + 1 < INTERVIEW_SCENARIOS.length) {
+        if (currentIndex + 1 < scenarios.length) {
           currentIndex++;
           renderScenario();
         } else {
@@ -427,9 +500,9 @@ export function createInterviewView(params, container) {
   function renderFinalScorecard() {
     stopTimer();
     const duration = Math.max(1, Math.round((Date.now() - sessionStartTime) / 1000));
-    const totalPossible = INTERVIEW_SCENARIOS.length * 100;
+    const totalPossible = scenarios.length * 100;
     const percentage = Math.round((totalScoreEarned / totalPossible) * 100);
-    const correctCount = INTERVIEW_SCENARIOS.length - loggedMistakes.length;
+    const correctCount = scenarios.length - loggedMistakes.length;
 
     let ratingTier = 'Needs Technical Preparation';
     let ratingBadgeClass = 'badge-subtle';
@@ -457,7 +530,7 @@ export function createInterviewView(params, container) {
       durationSeconds: duration,
       score: totalScoreEarned,
       maxScore: totalPossible,
-      questionsAnswered: INTERVIEW_SCENARIOS.length,
+      questionsAnswered: scenarios.length,
       correctAnswers: correctCount,
       incorrectAnswers: loggedMistakes.length,
       tags: ['Behavioral', 'System Design', 'STAR', 'AI-Evaluated'],
@@ -471,7 +544,7 @@ export function createInterviewView(params, container) {
           <span style="font-size: 3.5rem;">🎙️</span>
           <h2 style="margin: var(--space-sm) 0;">Interview Simulation Complete</h2>
           <p style="margin-bottom: var(--space-md); color: var(--color-ink-muted);">
-            Evaluation complete across ${INTERVIEW_SCENARIOS.length} behavioral and architectural design rounds.
+            Evaluation complete across ${scenarios.length} behavioral and architectural design rounds.
           </p>
 
           <div style="margin: var(--space-lg) 0;">
@@ -487,7 +560,7 @@ export function createInterviewView(params, container) {
             </div>
             <div class="stat-tile">
               <span class="stat-label">Rounds Cleared</span>
-              <span class="stat-value">${correctCount} / ${INTERVIEW_SCENARIOS.length}</span>
+              <span class="stat-value">${correctCount} / ${scenarios.length}</span>
             </div>
             <div class="stat-tile">
               <span class="stat-label">Total Duration</span>

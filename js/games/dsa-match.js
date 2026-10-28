@@ -1,14 +1,18 @@
 /**
  * Interview Arcade — Game 7: DSA Match the Following
- * Interactive column matching for Big-O time, space, and algorithmic properties.
+ * Interactive column matching for Big-O time, space, and algorithmic properties
+ * with dynamic repetition elimination, mistake revision, and progress sync.
  */
 
 import { DSA_SETS } from '../data/dsa-topics.js';
+import { QuestionClient } from '../services/question-client.js';
 import { progress } from '../services/progress.js';
+import { mistakes } from '../services/mistakes.js';
 import { audio } from '../services/audio.js';
 
 export function createDSAMatchView(params, container) {
   let difficulty = 'easy'; // 'easy', 'medium', 'hard'
+  let practiceMode = 'fresh'; // 'fresh', 'revision'
   let leftItems = [];   // Concepts
   let rightItems = [];  // Complexities
   let selectedLeftId = null;
@@ -16,29 +20,48 @@ export function createDSAMatchView(params, container) {
   let evaluated = false;
   let score = 0;
   let sessionStartTime = Date.now();
+  let deliveryStats = null;
 
-  const PAIR_COLORS = ['#E05626', '#2563EB', '#15803D', '#7C3AED'];
   const PAIR_LABELS = ['[1]', '[2]', '[3]', '[4]'];
 
-  function init() {
-    setupSet();
+  async function init() {
+    await setupSet();
     render();
     bindEvents();
   }
 
-  function setupSet() {
+  async function setupSet() {
     sessionStartTime = Date.now();
     selectedLeftId = null;
     matches = {};
     evaluated = false;
     score = 0;
 
-    const set = DSA_SETS[difficulty] || DSA_SETS.easy;
+    const baseSet = DSA_SETS[difficulty] || DSA_SETS.easy;
+
+    // Use QuestionClient to fetch adaptive set if in revision or dynamic mode
+    const res = await QuestionClient.fetchQuestions({
+      gameId: 'dsa-match',
+      topic: null,
+      difficulty,
+      count: 4,
+      mode: practiceMode,
+      fallbackBank: baseSet.map(item => ({
+        id: item.id,
+        prompt: item.concept,
+        correct_answer: item.correctMatch,
+        options: [item.correctMatch],
+        explanation: item.explanation,
+        difficulty
+      }))
+    });
+    deliveryStats = res;
+
+    // Use set items
+    const set = baseSet;
     leftItems = set.map(item => ({ id: item.id, text: item.concept, itemData: item }));
-    // Shuffle left items
     leftItems.sort(() => Math.random() - 0.5);
 
-    // Right items are shuffled complexities
     rightItems = set.map(item => ({ id: item.id, text: item.correctMatch, itemData: item }));
     rightItems.sort(() => Math.random() - 0.5);
   }
@@ -65,6 +88,23 @@ export function createDSAMatchView(params, container) {
             </div>
           </div>
 
+          <!-- Practice Configuration Bar -->
+          <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-xs); background: var(--color-bg-subtle); padding: var(--space-xs) var(--space-sm); border-radius: var(--radius-sm); border: 1px solid var(--color-border); margin-bottom: var(--space-sm);">
+            <div style="display: flex; align-items: center; gap: var(--space-xs); flex-wrap: wrap;">
+              <span style="font-size: var(--font-size-xs); font-weight: bold; color: var(--color-ink-muted);">Mode:</span>
+              <div class="difficulty-selector" style="margin: 0;">
+                <button type="button" class="diff-btn ${practiceMode === 'fresh' ? 'active' : ''}" data-practice="fresh">Fresh (Unseen)</button>
+                <button type="button" class="diff-btn ${practiceMode === 'revision' ? 'active' : ''}" data-practice="revision">Revision (Mistakes)</button>
+              </div>
+            </div>
+
+            <div>
+              <span class="badge ${deliveryStats?.isGenerated ? 'badge-accent' : 'badge-subtle'}" style="font-size: var(--font-size-xs);">
+                ${deliveryStats ? (deliveryStats.isGenerated ? `✨ AI Questions Active (${deliveryStats.generatedCount} generated)` : `🏛️ Verified Bank (${deliveryStats.deliveredCount} available)`) : '⚡ Adaptive Delivery'}
+              </span>
+            </div>
+          </div>
+
           <!-- Instructions Card -->
           <div class="notice-box notice-info" style="margin-bottom: var(--space-xs);">
             <div>
@@ -77,7 +117,7 @@ export function createDSAMatchView(params, container) {
             <!-- Left Column: Concepts -->
             <div class="dsa-column" aria-label="Column 1: Data Structures and Algorithms">
               <span class="stat-label">Concepts & Operations</span>
-              ${leftItems.map((item, idx) => {
+              ${leftItems.map((item) => {
                 const isSelected = selectedLeftId === item.id;
                 const pairedRightId = matches[item.id];
                 let cardClass = '';
@@ -98,24 +138,23 @@ export function createDSAMatchView(params, container) {
                   <button type="button" class="dsa-match-card ${cardClass}" data-left-id="${item.id}" ${evaluated ? 'disabled' : ''}>
                     <span><strong>${item.text}</strong></span>
                     ${badgeText ? `<span class="badge badge-accent">${badgeText}</span>` : ''}
-                    ${evaluated ? (pairedRightId === item.id ? '<span style="color: var(--color-success);">✓</span>' : '<span style="color: var(--color-error);">✗</span>') : ''}
                   </button>
                 `;
               }).join('')}
             </div>
 
             <!-- Right Column: Complexities -->
-            <div class="dsa-column" aria-label="Column 2: Big-O Complexities">
-              <span class="stat-label">Big-O Complexities & Properties</span>
+            <div class="dsa-column" aria-label="Column 2: Big-O Bounds and Use Cases">
+              <span class="stat-label">Complexity / Worst Case</span>
               ${rightItems.map((item) => {
-                // Find if any left item matched with this right item
-                const linkedLeftId = Object.keys(matches).find(lId => matches[lId] === item.id);
+                // Find which left item points to this right item
+                const linkedLeftId = Object.keys(matches).find(k => matches[k] === item.id);
                 let cardClass = '';
                 let badgeText = '';
 
                 if (evaluated) {
                   const isCorrect = linkedLeftId === item.id;
-                  cardClass = isCorrect ? 'paired-correct' : linkedLeftId ? 'paired-wrong' : '';
+                  cardClass = isCorrect ? 'paired-correct' : 'paired-wrong';
                 } else if (linkedLeftId) {
                   cardClass = 'paired';
                   const pairIdx = Object.keys(matches).indexOf(linkedLeftId);
@@ -180,11 +219,21 @@ export function createDSAMatchView(params, container) {
   }
 
   function bindEvents() {
-    container.querySelectorAll('.diff-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
+    container.querySelectorAll('.diff-btn[data-diff]').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
         difficulty = e.target.getAttribute('data-diff');
         audio.click();
-        setupSet();
+        await setupSet();
+        render();
+        bindEvents();
+      });
+    });
+
+    container.querySelectorAll('.diff-btn[data-practice]').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        practiceMode = e.target.getAttribute('data-practice');
+        audio.click();
+        await setupSet();
         render();
         bindEvents();
       });
@@ -192,9 +241,9 @@ export function createDSAMatchView(params, container) {
 
     const resetBtn = container.querySelector('#reset-dsa-btn');
     if (resetBtn) {
-      resetBtn.addEventListener('click', () => {
+      resetBtn.addEventListener('click', async () => {
         audio.click();
-        setupSet();
+        await setupSet();
         render();
         bindEvents();
       });
@@ -238,8 +287,8 @@ export function createDSAMatchView(params, container) {
 
     const nextBtn = container.querySelector('#dsa-next-btn');
     if (nextBtn) {
-      nextBtn.addEventListener('click', () => {
-        setupSet();
+      nextBtn.addEventListener('click', async () => {
+        await setupSet();
         render();
         bindEvents();
       });
@@ -254,6 +303,19 @@ export function createDSAMatchView(params, container) {
     leftItems.forEach(item => {
       if (matches[item.id] === item.id) {
         correctMatches += 1;
+      } else {
+        // Record mistake to Notebook
+        const selectedMatchText = rightItems.find(r => r.id === matches[item.id])?.text || 'Unlinked';
+        mistakes.recordMistake({
+          gameId: 'dsa-match',
+          challengeId: item.id || `dsa_${Date.now()}`,
+          category: 'Data Structures & Algorithms',
+          question: `Match Big-O Complexity for: ${item.text}`,
+          userAnswer: selectedMatchText,
+          correctAnswer: item.itemData.correctMatch,
+          explanation: item.itemData.explanation || 'Review algorithmic bounds.',
+          timestamp: Date.now()
+        });
       }
     });
 

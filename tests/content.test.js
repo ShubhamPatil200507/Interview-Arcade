@@ -10,6 +10,8 @@ import { SQL_CHALLENGES } from '../js/data/sql-challenges.js';
 import { VISUAL_RIDDLES } from '../js/data/visual-riddles.js';
 import { DSA_SETS } from '../js/data/dsa-topics.js';
 import { DEBUG_CHALLENGES } from '../js/data/debug-challenges.js';
+import { INTERVIEW_SCENARIOS } from '../js/data/interview-scenarios.js';
+import { DIAGNOSTIC_QUESTIONS } from '../js/data/diagnostic-questions.js';
 
 export function runContentTests(assert) {
   assert.describe('OOP Questions Integrity', () => {
@@ -65,5 +67,30 @@ export function runContentTests(assert) {
       assert.ok(d.options.length >= 3, `Debug challenge #${idx} has multiple diagnostic options`);
       assert.ok(d.fixSnippet && d.fixSnippet.length > 5, `Debug challenge #${idx} includes verified fix code`);
     });
+  });
+
+  assert.describe('Interview Scenarios Integrity', () => {
+    assert.ok(INTERVIEW_SCENARIOS.length >= 5, 'Interview scenarios bank has at least 5 scenarios');
+    INTERVIEW_SCENARIOS.forEach((sc, idx) => {
+      assert.ok(sc.id, `Scenario #${idx} has unique id`);
+      assert.ok(sc.situation && sc.situation.length > 30, `Scenario #${idx} has rich situation context`);
+      assert.ok(sc.starRubric && sc.starRubric.situation && sc.starRubric.action, `Scenario #${idx} defines STAR rubric`);
+      assert.ok(Array.isArray(sc.options) && sc.options.length === 4, `Scenario #${idx} has 4 options`);
+      assert.ok(sc.correctIndex >= 0 && sc.correctIndex < 4, `Scenario #${idx} has valid correctIndex`);
+      assert.ok(sc.explanation && sc.explanation.length > 20, `Scenario #${idx} has comprehensive explanation`);
+    });
+  });
+
+  assert.describe('Diagnostic Questions Integrity', () => {
+    assert.equal(DIAGNOSTIC_QUESTIONS.length, 5, 'Diagnostic assessment has exactly 5 calibration questions');
+    const skills = new Set();
+    DIAGNOSTIC_QUESTIONS.forEach((dq, idx) => {
+      assert.ok(dq.id, `Diagnostic #${idx} has id`);
+      assert.ok(dq.domain && dq.domain.length > 3, `Diagnostic #${idx} has domain label`);
+      assert.ok(dq.options.length === 4, `Diagnostic #${idx} has 4 options`);
+      assert.ok(dq.correctIndex >= 0 && dq.correctIndex < 4, `Diagnostic #${idx} has valid correctIndex`);
+      skills.add(dq.skill);
+    });
+    assert.ok(skills.size >= 4, 'Diagnostic spans at least 4 unique technical domains');
   });
 }

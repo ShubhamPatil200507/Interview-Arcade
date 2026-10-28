@@ -5,6 +5,8 @@
  */
 
 import { storage } from './storage.js';
+import { mistakes } from './mistakes.js';
+import { api } from './api-client.js';
 
 const SESSIONS_KEY = 'arcade_sessions';
 const ACHIEVEMENTS_KEY = 'arcade_achievements';
@@ -113,6 +115,34 @@ class ProgressService {
       sessions.pop();
     }
     storage.set(SESSIONS_KEY, sessions);
+
+    // Record mistakes in error notebook if present
+    if (Array.isArray(sessionData.mistakes)) {
+      sessionData.mistakes.forEach(m => {
+        mistakes.recordMistake({
+          ...m,
+          gameId: sessionData.gameId,
+          gameTitle: sessionData.gameTitle
+        });
+      });
+    }
+
+    // Server-sync submission if student is authenticated and answers provided
+    if (typeof api !== 'undefined' && api.token && Array.isArray(sessionData.answers) && sessionData.answers.length > 0) {
+      api.submitChallenge(
+        sessionData.gameId,
+        sessionData.difficulty || 'medium',
+        sessionData.answers,
+        sessionData.durationSeconds
+      ).then(res => {
+        // Broadcast custom event for UI updates
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('arcade:server-sync', { detail: res }));
+        }
+      }).catch(err => {
+        console.warn('Background challenge server sync failed (local state preserved):', err.message);
+      });
+    }
 
     // Evaluate real achievements
     const newlyUnlocked = this._evaluateAchievements(session, sessions);

@@ -1,0 +1,97 @@
+/* Interview Arcade — Mistakes Notebook View Styles */
+
+.mistakes-container {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.mistakes-filter-bar {
+  display: flex;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-sm);
+  border-bottom: 2px solid var(--color-ink);
+}
+
+.mistake-card {
+  background: var(--color-surface);
+  border: 2px solid var(--color-ink);
+  box-shadow: var(--shadow-tactile-sm);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-md);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.mistake-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-tactile);
+}
+
+.mistake-card.mastered {
+  border-left: 8px solid var(--color-success);
+  opacity: 0.9;
+}
+
+.mistake-card.pending {
+  border-left: 8px solid var(--color-accent);
+}
+
+.mistake-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-sm);
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.mistake-answers-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-sm);
+  margin: var(--space-md) 0;
+  font-size: var(--font-size-sm);
+}
+
+.answer-tile {
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-ink);
+}
+
+.answer-tile.student-choice {
+  background: rgba(217, 83, 79, 0.08);
+  border-color: var(--color-error);
+}
+
+.answer-tile.correct-choice {
+  background: rgba(34, 139, 34, 0.08);
+  border-color: var(--color-success);
+}
+
+.mistake-explanation-box {
+  background: var(--color-canvas);
+  border-left: 3px solid var(--color-ink);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  line-height: 1.6;
+  margin-top: var(--space-sm);
+}
+
+.retest-panel {
+  margin-top: var(--space-md);
+  padding: var(--space-md);
+  background: var(--color-canvas);
+  border: 2px dashed var(--color-accent);
+  border-radius: var(--radius-sm);
+}
+
+@media (max-width: 640px) {
+  .mistake-answers-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -96,8 +96,41 @@ export const ARCADE_GAMES = [
     href: '#/game/debugger'
   },
   {
-    id: 'feedback',
+    id: 'interview',
     number: '09',
+    title: 'Placement Interview Simulator',
+    category: 'Career',
+    description: 'High-stakes behavioral STAR methodology & technical system design scenarios with rubric scoring.',
+    difficulty: 'Med / Hard',
+    tags: ['STAR', 'Behavioral', 'System Design'],
+    icon: '🎙️',
+    href: '#/interview'
+  },
+  {
+    id: 'assessment',
+    number: '10',
+    title: 'Diagnostic Skill Assessment',
+    category: 'Career',
+    description: 'Rapid 3-minute timed calibration test across 5 core competencies to match your target role.',
+    difficulty: 'Timed 3m',
+    tags: ['Calibration', 'Placement', 'Diagnostic'],
+    icon: '📊',
+    href: '#/assessment'
+  },
+  {
+    id: 'mistakes',
+    number: '11',
+    title: 'Mistakes & Error Notebook',
+    category: 'Utility',
+    description: 'Deliberate practice notebook cataloging all missed questions with deep explanations and retesting.',
+    difficulty: 'Review',
+    tags: ['Corrections', 'Pedagogy', 'Mastery'],
+    icon: '📖',
+    href: '#/mistakes'
+  },
+  {
+    id: 'feedback',
+    number: '12',
     title: 'Feedback Chamber',
     category: 'Utility',
     description: 'Log your feedback, bug reports, and observations locally on your device with zero cloud tracking.',
@@ -108,7 +141,7 @@ export const ARCADE_GAMES = [
   },
   {
     id: 'dashboard',
-    number: '10',
+    number: '13',
     title: 'Progress Log & Analytics',
     category: 'Utility',
     description: 'Inspect real session counts, accuracy %, personal bests, and genuine unlocked achievement badges.',
@@ -140,14 +173,15 @@ export function createHomeView(params, container) {
         <!-- Arcade Hero Panel -->
         <section class="hero-arcade-panel" aria-labelledby="hero-title">
           <div class="hero-copy">
-            <span class="badge badge-accent" style="margin-bottom: var(--space-xs);">Handcrafted Learning Cabinet</span>
+            <span class="badge badge-accent" style="margin-bottom: var(--space-xs);">Unified Placement Preparation Cabinet</span>
             <h1 id="hero-title">Technical Interview Practice Without the Slop.</h1>
             <p>
-              Ten interactive mini-games covering algorithms, Big-O complexities, C++ memory safety, SQL query syntax, and quantitative aptitude. Built for computer engineering placement prep with genuine local-storage progress.
+              Twelve interactive practice chambers connecting initial diagnostic calibration, targeted role tracks, algorithmic mastery, SQL challenges, C++ debugging, behavioral STAR simulations, and deliberate error review.
             </p>
             <div style="display: flex; gap: var(--space-xs); flex-wrap: wrap;">
-              <a href="#/game/tictactoe" class="btn btn-primary btn-lg">Insert Coin & Play</a>
-              <a href="#/dashboard" class="btn btn-subtle btn-lg">View Saved Progress</a>
+              <a href="#/assessment" class="btn btn-primary btn-lg">Calibrate Skills (3 min) ➔</a>
+              <a href="#/interview" class="btn btn-subtle btn-lg">Interview Simulator</a>
+              <a href="#/dashboard" class="btn btn-subtle btn-lg">View Roadmap</a>
             </div>
           </div>
 
@@ -176,7 +210,7 @@ export function createHomeView(params, container) {
               <circle cx="111" cy="142" r="4" fill="#15803D"/>
             </svg>
             <div style="font-family: var(--font-mono); font-size: var(--font-size-xs); color: var(--color-ink-muted); margin-top: 4px;">
-              Cabinet v1.0 • 10 Games
+              Cabinet v2.0 • 12 Chambers
             </div>
           </div>
         </section>

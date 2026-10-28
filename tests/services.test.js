@@ -5,6 +5,7 @@
 
 import { storage } from '../js/services/storage.js';
 import { progress, ACHIEVEMENT_DEFINITIONS } from '../js/services/progress.js';
+import { mistakes } from '../js/services/mistakes.js';
 
 export function runServicesTests(assert) {
   // Test StorageService
@@ -87,5 +88,51 @@ export function runServicesTests(assert) {
     const resetMetrics = progress.getMetrics();
     assert.equal(resetMetrics.totalSessions, 0, 'Sessions reset back to 0');
     assert.equal(progress.getUnlockedAchievements().length, 0, 'Achievements cleared on reset');
+  });
+
+  // Test MistakesService
+  assert.describe('MistakesService', () => {
+    mistakes.clearAll();
+    assert.equal(mistakes.getMistakes().length, 0, 'Initial mistakes notebook is empty');
+
+    // Record mistake 1
+    const rec1 = mistakes.recordMistake({
+      challengeId: 'oop_m2',
+      category: 'OOP',
+      title: 'Liskov Substitution Violation',
+      prompt: 'Which principle states subtypes must be substitutable?',
+      studentAnswer: 'Open/Closed Principle',
+      correctAnswer: 'Liskov Substitution Principle',
+      explanation: 'LSP ensures derived classes do not break base class contracts.'
+    });
+
+    assert.ok(rec1 && rec1.id, 'Successfully logged mistake record');
+    assert.equal(mistakes.getMistakes().length, 1, 'Mistakes count is 1');
+    assert.equal(mistakes.getPending().length, 1, 'Pending mistakes count is 1');
+    assert.equal(mistakes.getMastered().length, 0, 'Mastered mistakes count is 0');
+
+    // Re-recording same challenge updates existing rather than duplicating
+    mistakes.recordMistake({
+      challengeId: 'oop_m2',
+      category: 'OOP',
+      studentAnswer: 'Single Responsibility Principle'
+    });
+    assert.equal(mistakes.getMistakes().length, 1, 'Deduplicates by challengeId');
+    assert.equal(mistakes.getMistakes()[0].attempts, 2, 'Increments attempt counter to 2');
+
+    // Mark as mastered
+    const masteredSuccess = mistakes.markMastered('oop_m2');
+    assert.ok(masteredSuccess, 'Marking mistake as mastered returns true');
+    assert.equal(mistakes.getMastered().length, 1, 'Mastered mistakes count is now 1');
+    assert.equal(mistakes.getPending().length, 0, 'Pending mistakes count is now 0');
+
+    // Stats
+    const stats = mistakes.getStats();
+    assert.equal(stats.total, 1, 'Total stats match');
+    assert.equal(stats.masteredCount, 1, 'Mastered count in stats is 1');
+
+    // Clean clear
+    mistakes.clearAll();
+    assert.equal(mistakes.getMistakes().length, 0, 'Mistakes notebook cleared successfully');
   });
 }

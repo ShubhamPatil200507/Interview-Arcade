@@ -5,6 +5,7 @@
 
 import { router } from './router.js';
 import { audio } from './services/audio.js';
+import { api } from './services/api-client.js';
 import { createHomeView } from './views/home.js';
 import { createDashboardView } from './views/dashboard.js';
 import { createFeedbackView } from './views/feedback.js';
@@ -19,11 +20,149 @@ import { createSQLView } from './games/sql-blanks.js';
 import { createVisualRiddlesView } from './games/visual-riddles.js';
 import { createDSAMatchView } from './games/dsa-match.js';
 import { createDebuggerView } from './games/debugger.js';
+import { createInterviewView } from './games/interview-sim.js';
+import { createAssessmentView } from './games/assessment.js';
+import { createMistakesView } from './views/mistakes.js';
 
-function initApp() {
+async function initApp() {
   setupSoundToggle();
+  await setupAuthUI();
   registerRoutes();
   router.init('app-view');
+}
+
+async function setupAuthUI() {
+  const container = document.getElementById('auth-status-container');
+  const modal = document.getElementById('auth-modal');
+  const openBtn = document.getElementById('auth-modal-btn');
+  const closeBtn = document.getElementById('close-auth-modal-btn');
+  const tabLogin = document.getElementById('tab-login-btn');
+  const tabReg = document.getElementById('tab-register-btn');
+  const loginForm = document.getElementById('login-form');
+  const regForm = document.getElementById('register-form');
+  const loginErr = document.getElementById('login-error-msg');
+  const regErr = document.getElementById('reg-error-msg');
+
+  // Try fetching current user from backend
+  const user = await api.getCurrentUser();
+  updateAuthHeader(user);
+
+  function updateAuthHeader(currentUser) {
+    if (!container) return;
+    if (currentUser) {
+      container.innerHTML = `
+        <div style="display: flex; align-items: center; gap: var(--space-xs);">
+          <span class="badge badge-accent" title="Current Level & Track">
+            Lvl ${currentUser.level} • ${currentUser.target_role.toUpperCase()}
+          </span>
+          <span style="font-size: var(--font-size-xs); font-weight: bold; color: var(--color-ink);">
+            ${currentUser.username} (${currentUser.xp} XP)
+          </span>
+          <button id="logout-btn" type="button" class="btn btn-sm btn-subtle" style="padding: 2px 6px; font-size: 0.75rem;">
+            Logout
+          </button>
+        </div>
+      `;
+      const logoutBtn = container.querySelector('#logout-btn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', async () => {
+          await api.logout();
+          audio.click();
+          updateAuthHeader(null);
+          showToast('Logged out of server sync. Practicing in local storage mode.');
+          window.location.reload();
+        });
+      }
+    } else {
+      container.innerHTML = `
+        <button id="auth-modal-btn" type="button" class="btn btn-sm btn-subtle">
+          👤 Sign In / Track
+        </button>
+      `;
+      const btn = container.querySelector('#auth-modal-btn');
+      if (btn) btn.addEventListener('click', () => openModal());
+    }
+  }
+
+  function openModal() {
+    if (modal) {
+      modal.classList.add('active');
+      audio.click();
+    }
+  }
+
+  function closeModal() {
+    if (modal) {
+      modal.classList.remove('active');
+    }
+  }
+
+  if (openBtn) openBtn.addEventListener('click', openModal);
+  if (closeBtn) closeBtn.addEventListener('click', closeModal);
+
+  if (tabLogin && tabReg && loginForm && regForm) {
+    tabLogin.addEventListener('click', () => {
+      tabLogin.className = 'btn btn-sm btn-primary';
+      tabReg.className = 'btn btn-sm btn-subtle';
+      loginForm.style.display = 'flex';
+      regForm.style.display = 'none';
+      if (loginErr) loginErr.style.display = 'none';
+    });
+
+    tabReg.addEventListener('click', () => {
+      tabReg.className = 'btn btn-sm btn-primary';
+      tabLogin.className = 'btn btn-sm btn-subtle';
+      loginForm.style.display = 'none';
+      regForm.style.display = 'flex';
+      if (regErr) regErr.style.display = 'none';
+    });
+  }
+
+  if (loginForm) {
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value;
+      const pwd = document.getElementById('login-password').value;
+      try {
+        const res = await api.login(email, pwd);
+        audio.win();
+        closeModal();
+        updateAuthHeader(res.user);
+        showToast(`Welcome back, ${res.user.username}! Progress is synced.`);
+        window.location.reload();
+      } catch (err) {
+        audio.wrong();
+        if (loginErr) {
+          loginErr.textContent = err.message;
+          loginErr.style.display = 'block';
+        }
+      }
+    });
+  }
+
+  if (regForm) {
+    regForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('reg-username').value;
+      const email = document.getElementById('reg-email').value;
+      const pwd = document.getElementById('reg-password').value;
+      const role = document.getElementById('reg-role').value;
+      try {
+        const res = await api.register(username, email, pwd, role);
+        audio.win();
+        closeModal();
+        updateAuthHeader(res.user);
+        showToast(`Account created for ${res.user.username}! Target track: ${role}.`);
+        window.location.reload();
+      } catch (err) {
+        audio.wrong();
+        if (regErr) {
+          regErr.textContent = err.message;
+          regErr.style.display = 'block';
+        }
+      }
+    });
+  }
 }
 
 function setupSoundToggle() {
@@ -60,6 +199,9 @@ function registerRoutes() {
   // Hub & Overview
   router.register('/', createHomeView);
   router.register('/arcade', createHomeView);
+  router.register('/assessment', createAssessmentView);
+  router.register('/interview', createInterviewView);
+  router.register('/mistakes', createMistakesView);
   router.register('/dashboard', createDashboardView);
   router.register('/resume', createResumeView);
   router.register('/feedback', createFeedbackView);
@@ -74,6 +216,9 @@ function registerRoutes() {
   router.register('/game/riddles', createVisualRiddlesView);
   router.register('/game/dsa', createDSAMatchView);
   router.register('/game/debugger', createDebuggerView);
+  router.register('/game/interview', createInterviewView);
+  router.register('/game/assessment', createAssessmentView);
+  router.register('/game/mistakes', createMistakesView);
   router.register('/game/feedback', createFeedbackView);
   router.register('/game/dashboard', createDashboardView);
 
@@ -89,6 +234,9 @@ function registerRoutes() {
       case 'riddles': return createVisualRiddlesView(params, container);
       case 'dsa': return createDSAMatchView(params, container);
       case 'debugger': return createDebuggerView(params, container);
+      case 'interview': return createInterviewView(params, container);
+      case 'assessment': return createAssessmentView(params, container);
+      case 'mistakes': return createMistakesView(params, container);
       case 'feedback': return createFeedbackView(params, container);
       case 'dashboard': return createDashboardView(params, container);
       default:

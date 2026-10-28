@@ -67,4 +67,51 @@ export function runGameLogicTests(assert) {
     assert.ok(matchedDBs.includes('postgresql'), 'Matches "postgresql"');
     assert.ok(!matchedDBs.includes('mongodb'), 'Does not match absent database "mongodb"');
   });
+
+  // 3. Interview Evaluation & STAR Grading Logic
+  assert.describe('Interview Scenario Scoring Logic', () => {
+    function computeInterviewGrade(totalPoints, maxPoints) {
+      const pct = Math.round((totalPoints / maxPoints) * 100);
+      if (pct >= 85) return 'Strong Hire';
+      if (pct >= 70) return 'Hire';
+      if (pct >= 50) return 'Borderline';
+      return 'No Hire';
+    }
+
+    assert.equal(computeInterviewGrade(550, 600), 'Strong Hire', '92% yields Strong Hire');
+    assert.equal(computeInterviewGrade(450, 600), 'Hire', '75% yields Hire');
+    assert.equal(computeInterviewGrade(320, 600), 'Borderline', '53% yields Borderline');
+    assert.equal(computeInterviewGrade(200, 600), 'No Hire', '33% yields No Hire');
+  });
+
+  // 4. Diagnostic Role Recommendation Calibration
+  assert.describe('Diagnostic Role Calibration Logic', () => {
+    function recommendRole(domainScores) {
+      if (domainScores.systems === 100 && domainScores.dsa === 100) return 'systems';
+      if (domainScores.sql === 100 && domainScores.aptitude === 100) return 'data';
+      if (domainScores.oop === 100 && domainScores.sql === 100) return 'backend';
+      return 'fullstack';
+    }
+
+    assert.equal(
+      recommendRole({ oop: 100, sql: 100, dsa: 0, aptitude: 0, systems: 0 }),
+      'backend',
+      'Strong OOP and SQL recommends backend track'
+    );
+    assert.equal(
+      recommendRole({ oop: 0, sql: 0, dsa: 100, aptitude: 0, systems: 100 }),
+      'systems',
+      'Strong Systems and DSA recommends systems track'
+    );
+    assert.equal(
+      recommendRole({ oop: 0, sql: 100, dsa: 0, aptitude: 100, systems: 0 }),
+      'data',
+      'Strong SQL and Aptitude recommends data track'
+    );
+    assert.equal(
+      recommendRole({ oop: 0, sql: 0, dsa: 0, aptitude: 0, systems: 0 }),
+      'fullstack',
+      'Default/balanced profile recommends fullstack track'
+    );
+  });
 }

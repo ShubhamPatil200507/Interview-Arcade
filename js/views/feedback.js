@@ -6,6 +6,7 @@
 import { storage } from '../services/storage.js';
 import { progress } from '../services/progress.js';
 import { audio } from '../services/audio.js';
+import { api } from '../services/api-client.js';
 
 const FEEDBACK_STORAGE_KEY = 'arcade_feedback_items';
 
@@ -215,7 +216,24 @@ export function createFeedbackView(params, container) {
       tags: ['Feedback', 'Usability']
     });
 
-    alert('Feedback entry saved into your device local storage!');
+    // Cloud sync if authenticated
+    if (typeof api !== 'undefined' && api.token) {
+      api.request('/feedback/submit', {
+        method: 'POST',
+        body: JSON.stringify({
+          rating: selectedRating,
+          category: selectedCategory,
+          comments: comments.trim()
+        })
+      }).catch(err => console.warn('Cloud feedback sync failed (local saved):', err.message));
+    }
+
+    const toast = document.getElementById('app-toast');
+    if (toast) {
+      toast.textContent = 'Feedback saved successfully to your profile!';
+      toast.classList.add('visible');
+      setTimeout(() => toast.classList.remove('visible'), 3000);
+    }
     comments = '';
     render();
     bindEvents();

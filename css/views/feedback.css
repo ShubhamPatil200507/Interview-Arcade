@@ -1,0 +1,47 @@
+/* ==========================================================================
+   Interview Arcade — Game 9: Feedback System
+   ========================================================================== */
+
+.feedback-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  background-color: var(--color-surface);
+  border: var(--border-width-md) solid var(--color-ink);
+  border-radius: var(--radius-md);
+  padding: var(--space-xl);
+  box-shadow: var(--shadow-tactile-md);
+}
+
+.rating-stars {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.star-btn {
+  font-size: 1.75rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  opacity: 0.35;
+  transition: transform var(--transition-fast), opacity var(--transition-fast);
+}
+
+.star-btn:hover, .star-btn.active {
+  opacity: 1;
+  transform: scale(1.15);
+}
+
+.feedback-input {
+  width: 100%;
+  padding: var(--space-sm);
+  border: var(--border-width-md) solid var(--color-ink);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+}
+
+.feedback-input:focus {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}

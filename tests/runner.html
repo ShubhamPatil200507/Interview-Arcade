@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interview Arcade — Automated Browser Test Runner</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <style>
+    body { padding: 2rem; max-width: 900px; margin: 0 auto; }
+    .suite-box { margin-bottom: 1.5rem; background: var(--color-surface); border: 2px solid var(--color-ink); border-radius: 6px; padding: 1rem; box-shadow: 2px 2px 0px var(--color-ink); }
+    .test-pass { color: var(--color-success); margin: 0.25rem 0; font-family: var(--font-mono); font-size: 0.85rem; }
+    .test-fail { color: var(--color-error); margin: 0.25rem 0; font-family: var(--font-mono); font-size: 0.85rem; font-weight: bold; }
+    .summary-card { padding: 1.25rem; border-radius: 6px; border: 2px solid var(--color-ink); margin-bottom: 2rem; }
+  </style>
+</head>
+<body>
+  <h1>Interview Arcade — Test Runner</h1>
+  <p>Automated in-browser test suite for storage, progress engine, data banks, and game logic.</p>
+  <div id="test-summary" class="summary-card" style="background: var(--color-bg-subtle);">
+    Running tests...
+  </div>
+  <div id="test-results"></div>
+
+  <script type="module">
+    import { runServicesTests } from './services.test.js';
+    import { runContentTests } from './content.test.js';
+    import { runGameLogicTests } from './games.test.js';
+
+    let total = 0;
+    let passed = 0;
+    let failed = 0;
+    let currentContainer = null;
+    const resultsContainer = document.getElementById('test-results');
+
+    const assert = {
+      describe(name, fn) {
+        currentContainer = document.createElement('div');
+        currentContainer.className = 'suite-box';
+        const h3 = document.createElement('h3');
+        h3.textContent = name;
+        currentContainer.appendChild(h3);
+        resultsContainer.appendChild(currentContainer);
+        fn();
+      },
+      ok(val, message) {
+        total++;
+        const p = document.createElement('div');
+        if (Boolean(val)) {
+          passed++;
+          p.className = 'test-pass';
+          p.textContent = '✓ ' + message;
+        } else {
+          failed++;
+          p.className = 'test-fail';
+          p.textContent = '✗ ' + message;
+        }
+        currentContainer.appendChild(p);
+      },
+      equal(actual, expected, message) {
+        total++;
+        const p = document.createElement('div');
+        if (actual === expected) {
+          passed++;
+          p.className = 'test-pass';
+          p.textContent = '✓ ' + message;
+        } else {
+          failed++;
+          p.className = 'test-fail';
+          p.textContent = `✗ ${message} (Expected ${expected}, got ${actual})`;
+        }
+        currentContainer.appendChild(p);
+      },
+      deepEqual(actual, expected, message) {
+        total++;
+        const p = document.createElement('div');
+        if (JSON.stringify(actual) === JSON.stringify(expected)) {
+          passed++;
+          p.className = 'test-pass';
+          p.textContent = '✓ ' + message;
+        } else {
+          failed++;
+          p.className = 'test-fail';
+          p.textContent = `✗ ${message} (Mismatch)`;
+        }
+        currentContainer.appendChild(p);
+      }
+    };
+
+    runServicesTests(assert);
+    runContentTests(assert);
+    runGameLogicTests(assert);
+
+    const summaryEl = document.getElementById('test-summary');
+    summaryEl.style.backgroundColor = failed === 0 ? 'var(--color-success-bg)' : 'var(--color-error-bg)';
+    summaryEl.innerHTML = `
+      <h3>${failed === 0 ? '✓ All Tests Passed Successfully!' : '✗ Test Failures Detected'}</h3>
+      <p>Total Assertions: <strong>${total}</strong> | Passed: <strong>${passed}</strong> | Failed: <strong>${failed}</strong></p>
+    `;
+  </script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+/* ==========================================================================
+   Interview Arcade — Arcade Hub / Home Styles
+   ========================================================================== */
+
+.hero-arcade-panel {
+  background-color: var(--color-surface);
+  border: var(--border-width-lg) solid var(--color-ink);
+  border-radius: var(--radius-md);
+  padding: var(--space-xl) var(--space-lg);
+  box-shadow: var(--shadow-tactile-lg);
+  margin-bottom: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  position: relative;
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .hero-arcade-panel {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-2xl) var(--space-xl);
+  }
+}
+
+.hero-copy {
+  max-width: 580px;
+}
+
+.hero-copy h1 {
+  font-size: var(--font-size-3xl);
+  letter-spacing: -0.03em;
+  margin-bottom: var(--space-xs);
+  line-height: 1.1;
+}
+
+.hero-copy p {
+  font-size: var(--font-size-md);
+  color: var(--color-ink-muted);
+  margin-bottom: var(--space-md);
+}
+
+.hero-cabinet-graphic {
+  background-color: var(--color-bg-subtle);
+  border: var(--border-width-md) solid var(--color-ink);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  box-shadow: var(--shadow-tactile-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 240px;
+}
+
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-lg);
+  align-items: center;
+}
+
+.filter-chip {
+  padding: 0.35rem 0.85rem;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-full);
+  border: var(--border-width-sm) solid var(--color-border);
+  background-color: var(--color-surface);
+  color: var(--color-ink-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.filter-chip:hover {
+  border-color: var(--color-ink);
+  color: var(--color-ink);
+}
+
+.filter-chip.active {
+  background-color: var(--color-ink);
+  border-color: var(--color-ink);
+  color: #FFFFFF;
+  box-shadow: 2px 2px 0px var(--color-accent);
+}
+
+.game-card-hub {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.game-card-hub h3 {
+  font-size: var(--font-size-md);
+  margin-top: var(--space-2xs);
+  margin-bottom: var(--space-3xs);
+}
+
+.game-card-hub p {
+  font-size: var(--font-size-sm);
+  color: var(--color-ink-muted);
+  flex: 1;
+}

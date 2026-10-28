@@ -1,0 +1,221 @@
+/* ==========================================================================
+   Interview Arcade — Layout Styles
+   ========================================================================== */
+
+/* App Shell Structure */
+#app-header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-nav);
+  background-color: var(--color-bg);
+  border-bottom: var(--border-width-md) solid var(--color-ink);
+  box-shadow: 0 2px 0px rgba(28, 25, 23, 0.05);
+}
+
+.header-inner {
+  max-width: var(--max-width-content);
+  margin: 0 auto;
+  padding: var(--space-xs) var(--space-md);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+/* Brand Logo */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  text-decoration: none;
+  color: var(--color-ink);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-md);
+  letter-spacing: -0.02em;
+}
+
+.brand:hover {
+  text-decoration: none;
+  color: var(--color-ink);
+}
+
+.brand-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-accent);
+  color: #FFFFFF;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  padding: 0.15rem 0.45rem;
+  border-radius: var(--radius-xs);
+  border: var(--border-width-md) solid var(--color-ink);
+  box-shadow: 1.5px 1.5px 0px var(--color-ink);
+}
+
+.brand-title {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2xs);
+}
+
+.brand-title span {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  color: var(--color-ink-muted);
+  font-weight: var(--font-weight-regular);
+}
+
+/* Main Navigation */
+.main-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+}
+
+.nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  padding: 0.4rem 0.75rem;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-ink);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  border: var(--border-width-sm) solid transparent;
+  transition: all var(--transition-fast);
+}
+
+.nav-link:hover {
+  background-color: var(--color-bg-subtle);
+  border-color: var(--color-border);
+  text-decoration: none;
+}
+
+.nav-link.active {
+  background-color: var(--color-surface);
+  border: var(--border-width-md) solid var(--color-ink);
+  box-shadow: 2px 2px 0px var(--color-ink);
+  font-weight: var(--font-weight-bold);
+}
+
+/* Header Utilities */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+/* Main Viewport Container */
+#main-content {
+  flex: 1;
+  width: 100%;
+}
+
+.content-container {
+  max-width: var(--max-width-content);
+  margin: 0 auto;
+  padding: var(--space-lg) var(--space-md) var(--space-2xl);
+}
+
+/* App Footer */
+#app-footer {
+  border-top: var(--border-width-md) solid var(--color-ink);
+  background-color: var(--color-bg-subtle);
+  padding: var(--space-lg) var(--space-md);
+  margin-top: auto;
+}
+
+.footer-inner {
+  max-width: var(--max-width-content);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  font-size: var(--font-size-sm);
+  color: var(--color-ink-muted);
+}
+
+@media (min-width: 768px) {
+  .footer-inner {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+.footer-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+
+.footer-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  padding: 0.2rem 0.5rem;
+  background-color: var(--color-surface);
+  border: var(--border-width-sm) solid var(--color-border);
+  border-radius: var(--radius-xs);
+}
+
+/* Game Frame Layout */
+.game-frame {
+  max-width: var(--max-width-game);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.game-header-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  background-color: var(--color-surface);
+  border: var(--border-width-md) solid var(--color-ink);
+  box-shadow: var(--shadow-tactile-md);
+  border-radius: var(--radius-md);
+}
+
+.game-title-group h2 {
+  font-size: var(--font-size-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.game-controls-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+}
+
+/* Responsive Grid Patterns */
+.grid-cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-md);
+}
+
+@media (min-width: 640px) {
+  .grid-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid-cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

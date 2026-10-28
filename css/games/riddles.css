@@ -1,0 +1,65 @@
+/* ==========================================================================
+   Interview Arcade — Game 6: Visual Logic Riddles
+   ========================================================================== */
+
+.riddle-card {
+  background-color: var(--color-surface);
+  border: var(--border-width-md) solid var(--color-ink);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-tactile-md);
+  padding: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.riddle-svg-container {
+  background-color: var(--color-surface);
+  border: var(--border-width-md) solid var(--color-ink);
+  border-radius: var(--radius-sm);
+  padding: var(--space-md);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: var(--shadow-inset);
+  overflow-x: auto;
+}
+
+.riddle-options-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.riddle-option-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  background-color: var(--color-bg-subtle);
+  border: var(--border-width-sm) solid var(--color-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-align: left;
+  font-size: var(--font-size-sm);
+  transition: all var(--transition-fast);
+}
+
+.riddle-option-btn:hover:not(:disabled) {
+  border-color: var(--color-ink);
+  background-color: var(--color-surface);
+  transform: translateX(4px);
+}
+
+.riddle-option-btn.selected-correct {
+  background-color: var(--color-success-bg);
+  border-color: var(--color-success);
+  color: var(--color-success);
+  font-weight: bold;
+}
+
+.riddle-option-btn.selected-wrong {
+  background-color: var(--color-error-bg);
+  border-color: var(--color-error);
+  color: var(--color-error);
+}

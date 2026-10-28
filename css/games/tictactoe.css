@@ -1,0 +1,125 @@
+/* ==========================================================================
+   Interview Arcade — Game 1: Tic Tac Toe + OOP Quiz
+   ========================================================================== */
+
+.ttt-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.ttt-grid-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.ttt-board {
+  display: grid;
+  grid-template-columns: repeat(3, 90px);
+  grid-template-rows: repeat(3, 90px);
+  gap: 8px;
+  background-color: var(--color-ink);
+  padding: 8px;
+  border-radius: var(--radius-md);
+  border: var(--border-width-md) solid var(--color-ink);
+  box-shadow: var(--shadow-tactile-lg);
+}
+
+@media (min-width: 480px) {
+  .ttt-board {
+    grid-template-columns: repeat(3, 110px);
+    grid-template-rows: repeat(3, 110px);
+    gap: 10px;
+    padding: 10px;
+  }
+}
+
+.ttt-cell {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 2.5rem;
+  font-weight: var(--font-weight-extrabold);
+  color: var(--color-ink);
+  cursor: pointer;
+  border: none;
+  transition: background-color var(--transition-fast), transform var(--transition-fast);
+  user-select: none;
+}
+
+.ttt-cell:hover:not(:disabled) {
+  background-color: var(--color-surface-hover);
+  transform: scale(0.98);
+}
+
+.ttt-cell.cell-x {
+  color: var(--color-accent);
+}
+
+.ttt-cell.cell-o {
+  color: #2563EB;
+}
+
+.ttt-cell.cell-win {
+  background-color: var(--color-success-bg);
+  border: 2px solid var(--color-success);
+}
+
+.ttt-status-card {
+  background-color: var(--color-surface);
+  border: var(--border-width-md) solid var(--color-ink);
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm) var(--space-md);
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  box-shadow: var(--shadow-tactile-sm);
+}
+
+/* Integrated OOP Quiz Drawer / Modal in Tic Tac Toe */
+.ttt-quiz-card {
+  background-color: var(--color-surface);
+  border: var(--border-width-md) solid var(--color-ink);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-tactile-md);
+  padding: var(--space-lg);
+  margin-top: var(--space-md);
+}
+
+.quiz-option-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: var(--space-sm) var(--space-md);
+  margin-bottom: var(--space-xs);
+  border: var(--border-width-sm) solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-bg-subtle);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+}
+
+.quiz-option-btn:hover:not(:disabled) {
+  border-color: var(--color-ink);
+  background-color: var(--color-surface);
+  transform: translateX(3px);
+}
+
+.quiz-option-btn.selected-correct {
+  background-color: var(--color-success-bg);
+  border-color: var(--color-success);
+  color: var(--color-success);
+  font-weight: var(--font-weight-bold);
+}
+
+.quiz-option-btn.selected-wrong {
+  background-color: var(--color-error-bg);
+  border-color: var(--color-error);
+  color: var(--color-error);
+}

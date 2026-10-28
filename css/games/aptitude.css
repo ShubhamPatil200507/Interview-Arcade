@@ -1,0 +1,83 @@
+/* ==========================================================================
+   Interview Arcade — Game 3: Aptitude Quiz
+   ========================================================================== */
+
+.aptitude-card {
+  background-color: var(--color-surface);
+  border: var(--border-width-md) solid var(--color-ink);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-tactile-md);
+  padding: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.apt-question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+}
+
+.apt-question-text {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-snug);
+  color: var(--color-ink);
+}
+
+.apt-options-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-xs);
+}
+
+@media (min-width: 600px) {
+  .apt-options-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.apt-option-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-md);
+  background-color: var(--color-bg-subtle);
+  border: var(--border-width-md) solid var(--color-ink);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  box-shadow: 2px 2px 0px var(--color-ink);
+  transition: transform var(--transition-fast), background-color var(--transition-fast);
+  text-align: left;
+}
+
+.apt-option-btn:hover:not(:disabled) {
+  background-color: var(--color-surface);
+  transform: translate(-1px, -1px);
+}
+
+.apt-option-btn.correct {
+  background-color: var(--color-success-bg);
+  border-color: var(--color-success);
+  color: var(--color-success);
+}
+
+.apt-option-btn.wrong {
+  background-color: var(--color-error-bg);
+  border-color: var(--color-error);
+  color: var(--color-error);
+}
+
+.apt-hint-box {
+  background-color: var(--color-warning-bg);
+  border: var(--border-width-sm) solid var(--color-warning-border);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-xs);
+  font-size: var(--font-size-xs);
+  color: var(--color-warning);
+}

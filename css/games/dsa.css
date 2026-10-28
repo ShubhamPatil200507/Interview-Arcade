@@ -1,0 +1,65 @@
+/* ==========================================================================
+   Interview Arcade — Game 7: DSA Match the Following
+   ========================================================================== */
+
+.dsa-columns-wrap {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-md);
+  margin-top: var(--space-md);
+}
+
+@media (min-width: 640px) {
+  .dsa-columns-wrap {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.dsa-column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.dsa-match-card {
+  padding: var(--space-md);
+  background-color: var(--color-surface);
+  border: var(--border-width-md) solid var(--color-ink);
+  border-radius: var(--radius-sm);
+  box-shadow: 2px 2px 0px var(--color-ink);
+  cursor: pointer;
+  text-align: left;
+  transition: transform var(--transition-fast), background-color var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-xs);
+}
+
+.dsa-match-card:hover:not(:disabled) {
+  background-color: var(--color-surface-hover);
+  transform: translateX(2px);
+}
+
+.dsa-match-card.active-selected {
+  background-color: var(--color-accent-surface);
+  border-color: var(--color-accent);
+  box-shadow: 2px 2px 0px var(--color-accent);
+}
+
+.dsa-match-card.paired {
+  border-style: dashed;
+  opacity: 0.85;
+}
+
+.dsa-match-card.paired-correct {
+  background-color: var(--color-success-bg);
+  border-color: var(--color-success);
+  border-style: solid;
+}
+
+.dsa-match-card.paired-wrong {
+  background-color: var(--color-error-bg);
+  border-color: var(--color-error);
+  border-style: solid;
+}

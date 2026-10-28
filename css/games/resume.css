@@ -1,0 +1,79 @@
+/* ==========================================================================
+   Interview Arcade — Game 4: Resume Keyword Matcher
+   ========================================================================== */
+
+.resume-inputs-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-md);
+}
+
+@media (min-width: 768px) {
+  .resume-inputs-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.resume-textarea-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.resume-textarea {
+  width: 100%;
+  height: 240px;
+  padding: var(--space-sm);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-normal);
+  color: var(--color-ink);
+  background-color: var(--color-surface);
+  border: var(--border-width-md) solid var(--color-ink);
+  border-radius: var(--radius-sm);
+  resize: vertical;
+  box-shadow: var(--shadow-inset);
+}
+
+.resume-textarea:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: var(--focus-ring);
+}
+
+.match-pills-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2xs);
+  margin-top: var(--space-xs);
+}
+
+.skill-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0.25rem 0.55rem;
+  border-radius: var(--radius-xs);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  border: 1px solid var(--color-border);
+}
+
+.skill-pill.pill-matched {
+  background-color: var(--color-success-bg);
+  border-color: var(--color-success-border);
+  color: var(--color-success);
+}
+
+.skill-pill.pill-missing {
+  background-color: var(--color-error-bg);
+  border-color: var(--color-error-border);
+  color: var(--color-error);
+}
+
+.skill-pill.pill-verb {
+  background-color: var(--color-info-bg);
+  border-color: var(--color-info-border);
+  color: var(--color-info);
+}

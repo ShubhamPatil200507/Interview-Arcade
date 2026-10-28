@@ -1,0 +1,41 @@
+/* ==========================================================================
+   Interview Arcade — Game 8: Debug the Code (C++)
+   ========================================================================== */
+
+.code-viewer-container {
+  background-color: var(--color-surface-code);
+  border: var(--border-width-md) solid var(--color-ink);
+  border-radius: var(--radius-sm);
+  padding: var(--space-md);
+  margin-bottom: var(--space-md);
+  box-shadow: var(--shadow-tactile-sm);
+  overflow-x: auto;
+}
+
+.code-block-mono {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+  color: var(--color-ink-code);
+  white-space: pre;
+}
+
+.code-line-highlight {
+  background-color: rgba(224, 86, 38, 0.2);
+  border-left: 3px solid var(--color-accent);
+  display: block;
+  margin: 0 -0.5rem;
+  padding: 0 0.5rem;
+}
+
+.fix-snippet-box {
+  background-color: #121814;
+  border: 1px solid var(--color-success);
+  border-radius: var(--radius-xs);
+  padding: var(--space-sm);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  color: #86EFAC;
+  white-space: pre-wrap;
+  margin-top: var(--space-xs);
+}

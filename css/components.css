@@ -1,0 +1,375 @@
+/* ==========================================================================
+   Interview Arcade — Reusable Components
+   Handcrafted tactile indie arcade aesthetic
+   ========================================================================== */
+
+/* 1. Tactile Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  padding: 0.55rem 1.15rem;
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1;
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  border: var(--border-width-md) solid var(--color-ink);
+  background-color: var(--color-surface);
+  color: var(--color-ink);
+  box-shadow: var(--shadow-tactile-sm);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
+  user-select: none;
+  cursor: pointer;
+}
+
+.btn:hover {
+  text-decoration: none;
+  color: var(--color-ink);
+  background-color: var(--color-surface-hover);
+  transform: translate(-1px, -1px);
+  box-shadow: var(--shadow-tactile-md);
+}
+
+.btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0px 0px 0px var(--color-ink);
+  background-color: var(--color-surface-active);
+}
+
+.btn:disabled, .btn[aria-disabled="true"] {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: var(--shadow-tactile-sm) !important;
+  pointer-events: none;
+}
+
+/* Primary Button (Arcade Vermilion) */
+.btn-primary {
+  background-color: var(--color-accent);
+  color: #FFFFFF;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-accent-hover);
+  color: #FFFFFF;
+}
+
+.btn-primary:active {
+  background-color: var(--color-accent-active);
+}
+
+/* Subtle / Ghost Button */
+.btn-subtle {
+  background-color: transparent;
+  border-color: var(--color-border);
+  box-shadow: none;
+  color: var(--color-ink-muted);
+}
+
+.btn-subtle:hover {
+  background-color: var(--color-bg-subtle);
+  border-color: var(--color-ink);
+  color: var(--color-ink);
+  box-shadow: var(--shadow-tactile-sm);
+}
+
+.btn-danger {
+  background-color: var(--color-error);
+  color: #FFFFFF;
+}
+
+.btn-danger:hover {
+  background-color: #991B1B;
+  color: #FFFFFF;
+}
+
+/* Button Sizing */
+.btn-sm {
+  padding: 0.35rem 0.65rem;
+  font-size: var(--font-size-xs);
+}
+
+.btn-lg {
+  padding: 0.75rem 1.5rem;
+  font-size: var(--font-size-base);
+}
+
+/* 2. Distinctive Badges & Tags */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.55rem;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  border-radius: var(--radius-xs);
+  border: var(--border-width-sm) solid var(--color-border);
+  background-color: var(--color-bg-subtle);
+  color: var(--color-ink);
+  line-height: 1.2;
+}
+
+.badge-accent {
+  background-color: var(--color-accent-surface);
+  border-color: var(--color-accent-border);
+  color: var(--color-accent);
+}
+
+/* Real Difficulty Chips */
+.badge-easy {
+  background-color: var(--diff-easy-bg);
+  border-color: var(--diff-easy-border);
+  color: var(--diff-easy-text);
+}
+
+.badge-medium {
+  background-color: var(--diff-medium-bg);
+  border-color: var(--diff-medium-border);
+  color: var(--diff-medium-text);
+}
+
+.badge-hard {
+  background-color: var(--diff-hard-bg);
+  border-color: var(--diff-hard-border);
+  color: var(--diff-hard-text);
+}
+
+/* 3. Difficulty Selector Component */
+.difficulty-selector {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--color-surface-inset);
+  padding: 3px;
+  border-radius: var(--radius-sm);
+  border: var(--border-width-sm) solid var(--color-border);
+  gap: 2px;
+}
+
+.diff-btn {
+  padding: 0.25rem 0.65rem;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-xs);
+  border: 1px solid transparent;
+  color: var(--color-ink-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.diff-btn:hover {
+  color: var(--color-ink);
+}
+
+.diff-btn.active {
+  background-color: var(--color-surface);
+  color: var(--color-ink);
+  font-weight: var(--font-weight-bold);
+  border-color: var(--color-ink);
+  box-shadow: 1px 1px 0px var(--color-ink);
+}
+
+/* 4. Tactile Card Surfaces */
+.card {
+  background-color: var(--color-surface);
+  border: var(--border-width-md) solid var(--color-ink);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-tactile-md);
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.card-interactive {
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.card-interactive:hover {
+  text-decoration: none;
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-tactile-lg);
+}
+
+.card-interactive:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px var(--color-ink);
+}
+
+/* 5. Stat Tiles */
+.stat-tile {
+  background-color: var(--color-surface);
+  border: var(--border-width-md) solid var(--color-ink);
+  border-radius: var(--radius-sm);
+  padding: var(--space-md);
+  box-shadow: var(--shadow-tactile-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3xs);
+}
+
+.stat-value {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-ink);
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* 6. Honest Notification & Notice Boxes */
+.notice-box {
+  padding: var(--space-md);
+  border-radius: var(--radius-sm);
+  border: var(--border-width-md) solid var(--color-ink);
+  background-color: var(--color-bg-subtle);
+  display: flex;
+  gap: var(--space-sm);
+  align-items: flex-start;
+  margin-bottom: var(--space-md);
+}
+
+.notice-box.notice-info {
+  background-color: var(--color-info-bg);
+  border-color: var(--color-info);
+  color: var(--color-info);
+}
+
+.notice-box.notice-warning {
+  background-color: var(--color-warning-bg);
+  border-color: var(--color-warning);
+  color: var(--color-warning);
+}
+
+.notice-box.notice-success {
+  background-color: var(--color-success-bg);
+  border-color: var(--color-success);
+  color: var(--color-success);
+}
+
+/* 7. Modal System */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(28, 25, 23, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-md);
+  z-index: var(--z-modal-backdrop);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-normal);
+}
+
+.modal-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-dialog {
+  background-color: var(--color-surface);
+  border: var(--border-width-lg) solid var(--color-ink);
+  border-radius: var(--radius-lg);
+  box-shadow: 8px 8px 0px var(--color-ink);
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform: translateY(16px);
+  transition: transform var(--transition-normal);
+}
+
+.modal-backdrop.active .modal-dialog {
+  transform: translateY(0);
+}
+
+.modal-header {
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: var(--border-width-md) solid var(--color-ink);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--color-bg-subtle);
+}
+
+.modal-body {
+  padding: var(--space-lg);
+  overflow-y: auto;
+}
+
+.modal-footer {
+  padding: var(--space-md) var(--space-lg);
+  border-top: var(--border-width-sm) solid var(--color-border);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-xs);
+  background-color: var(--color-bg-subtle);
+}
+
+/* 8. Audio Toggle Button */
+.audio-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.65rem;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  border-radius: var(--radius-sm);
+  border: var(--border-width-sm) solid var(--color-border);
+  background-color: var(--color-surface);
+  color: var(--color-ink-muted);
+  cursor: pointer;
+}
+
+.audio-toggle:hover {
+  border-color: var(--color-ink);
+  color: var(--color-ink);
+}
+
+.audio-toggle.muted {
+  opacity: 0.7;
+}
+
+/* 9. Live Region Toast */
+#app-toast {
+  position: fixed;
+  bottom: var(--space-lg);
+  right: var(--space-lg);
+  z-index: var(--z-toast);
+  background-color: var(--color-ink);
+  color: #FFFFFF;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  transform: translateY(100px);
+  opacity: 0;
+  transition: transform var(--transition-normal), opacity var(--transition-normal);
+  pointer-events: none;
+}
+
+#app-toast.visible {
+  transform: translateY(0);
+  opacity: 1;
+}

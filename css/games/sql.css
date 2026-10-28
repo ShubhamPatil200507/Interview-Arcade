@@ -1,0 +1,82 @@
+/* ==========================================================================
+   Interview Arcade — Game 5: SQL Fill in the Blanks
+   ========================================================================== */
+
+.sql-schema-table-wrap {
+  overflow-x: auto;
+  margin-bottom: var(--space-md);
+  border: var(--border-width-md) solid var(--color-ink);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-tactile-sm);
+}
+
+.sql-schema-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  text-align: left;
+}
+
+.sql-schema-table th, .sql-schema-table td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.sql-schema-table th {
+  background-color: var(--color-bg-subtle);
+  font-weight: var(--font-weight-bold);
+  border-bottom: var(--border-width-md) solid var(--color-ink);
+}
+
+.sql-query-display {
+  background-color: var(--color-surface-code);
+  color: var(--color-ink-code);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-md);
+  padding: var(--space-lg);
+  border-radius: var(--radius-sm);
+  border: var(--border-width-md) solid var(--color-ink);
+  margin-bottom: var(--space-md);
+  line-height: var(--line-height-relaxed);
+  word-break: break-word;
+}
+
+.sql-blank-slot {
+  display: inline-block;
+  min-width: 100px;
+  background-color: #2D2D35;
+  border-bottom: 2px dashed var(--color-accent);
+  padding: 2px 8px;
+  color: #FCD34D;
+  font-weight: bold;
+}
+
+.sql-input-field {
+  padding: 0.55rem 0.85rem;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-base);
+  border: var(--border-width-md) solid var(--color-ink);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface);
+  color: var(--color-ink);
+  box-shadow: 2px 2px 0px var(--color-ink);
+}
+
+.sql-token-pill {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  padding: 0.35rem 0.65rem;
+  background-color: var(--color-surface);
+  border: var(--border-width-sm) solid var(--color-border);
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.sql-token-pill:hover {
+  border-color: var(--color-ink);
+  background-color: var(--color-accent-surface);
+  color: var(--color-accent);
+}

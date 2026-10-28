@@ -1,0 +1,81 @@
+/* ==========================================================================
+   Interview Arcade — Game 10: Progress Dashboard
+   ========================================================================== */
+
+.dashboard-hero-banner {
+  background-color: var(--color-surface);
+  border: var(--border-width-md) solid var(--color-ink);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-tactile-md);
+  padding: var(--space-xl);
+  margin-bottom: var(--space-lg);
+}
+
+.achievements-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-sm);
+}
+
+@media (min-width: 640px) {
+  .achievements-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 992px) {
+  .achievements-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.achievement-card {
+  padding: var(--space-md);
+  border-radius: var(--radius-sm);
+  border: var(--border-width-md) solid var(--color-ink);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-tactile-sm);
+  display: flex;
+  gap: var(--space-sm);
+  align-items: flex-start;
+  transition: transform var(--transition-fast);
+}
+
+.achievement-card.locked {
+  background-color: var(--color-bg-subtle);
+  border-color: var(--color-border);
+  opacity: 0.65;
+  box-shadow: none;
+}
+
+.achievement-icon {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.activity-table-wrap {
+  overflow-x: auto;
+  border: var(--border-width-md) solid var(--color-ink);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-tactile-sm);
+}
+
+.activity-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+  text-align: left;
+}
+
+.activity-table th, .activity-table td {
+  padding: 0.65rem 0.85rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.activity-table th {
+  background-color: var(--color-bg-subtle);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+}

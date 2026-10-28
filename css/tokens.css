@@ -1,0 +1,134 @@
+/* ==========================================================================
+   Interview Arcade — Design Tokens
+   Handcrafted Indie Arcade Aesthetic
+   ========================================================================== */
+
+:root {
+  /* Surface & Background (Warm Ink & Paper Palette) */
+  --color-bg: #FBF9F5;              /* Warm off-white page background */
+  --color-bg-subtle: #F3EFE6;       /* Warm neutral panel */
+  --color-surface: #FFFFFF;         /* Crisp card surface */
+  --color-surface-hover: #FFFDF9;   /* Hovered card */
+  --color-surface-active: #F4EFE6;  /* Pressed card state */
+  --color-surface-inset: #ECE6D8;   /* Inset container / well */
+  --color-surface-code: #1A1A1E;    /* Deep charcoal code box */
+
+  /* Text & Ink */
+  --color-ink: #1C1917;             /* Dark near-black charcoal */
+  --color-ink-muted: #57534E;       /* Secondary descriptive text */
+  --color-ink-faint: #78716C;       /* Tertiary text / captions / hints */
+  --color-ink-code: #F3F4F6;        /* Monospace code text */
+  --color-ink-inverse: #FFFFFF;     /* White text on dark/accent surfaces */
+
+  /* Borders & Dividers */
+  --color-border: #D8D2C5;          /* Subtle structural border */
+  --color-border-subtle: #E8E3D8;   /* Light line divider */
+  --color-border-bold: #1C1917;     /* High-contrast ink border */
+
+  /* Primary Brand Accent (Arcade Amber / Warm Vermilion) */
+  --color-accent: #E05626;          /* Distinctive warm arcade accent */
+  --color-accent-hover: #C8461A;    /* Darkened hover accent */
+  --color-accent-active: #A93610;   /* Pressed accent */
+  --color-accent-surface: #FDF3EC;  /* Light tint surface */
+  --color-accent-border: #F6CCA9;   /* Tint border */
+  --color-accent-ink: #FFFFFF;      /* Text on accent */
+
+  /* Semantic Feedback States */
+  --color-success: #15803D;         /* Success green */
+  --color-success-bg: #F0FDF4;      /* Success surface */
+  --color-success-border: #86EFAC;  /* Success border */
+  --color-error: #B91C1C;           /* Crimson error */
+  --color-error-bg: #FEF2F2;        /* Error surface */
+  --color-error-border: #FCA5A5;    /* Error border */
+  --color-warning: #B45309;         /* Amber warning */
+  --color-warning-bg: #FFFBEB;      /* Warning surface */
+  --color-warning-border: #FCD34D;  /* Warning border */
+  --color-info: #3730A3;            /* Deep indigo info */
+  --color-info-bg: #EEF2FF;         /* Info surface */
+  --color-info-border: #A5B4FC;     /* Info border */
+
+  /* Difficulty Indicators */
+  --diff-easy-bg: #ECFDF5;
+  --diff-easy-border: #10B981;
+  --diff-easy-text: #065F46;
+  --diff-medium-bg: #FFFBEB;
+  --diff-medium-border: #F59E0B;
+  --diff-medium-text: #92400E;
+  --diff-hard-bg: #FEF2F2;
+  --diff-hard-border: #EF4444;
+  --diff-hard-text: #991B1B;
+
+  /* Typography Scales */
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "Cascadia Code", "Fira Code", "JetBrains Mono", Consolas, Menlo, Monaco, monospace;
+  
+  --font-size-xs: 0.75rem;     /* 12px */
+  --font-size-sm: 0.875rem;    /* 14px */
+  --font-size-base: 1rem;      /* 16px */
+  --font-size-md: 1.125rem;    /* 18px */
+  --font-size-lg: 1.25rem;     /* 20px */
+  --font-size-xl: 1.5rem;      /* 24px */
+  --font-size-2xl: 2rem;       /* 32px */
+  --font-size-3xl: 2.5rem;     /* 40px */
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+
+  --line-height-tight: 1.2;
+  --line-height-snug: 1.35;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.65;
+
+  /* Spacing Scale */
+  --space-3xs: 0.25rem;   /* 4px */
+  --space-2xs: 0.375rem;  /* 6px */
+  --space-xs: 0.5rem;     /* 8px */
+  --space-sm: 0.75rem;    /* 12px */
+  --space-md: 1rem;       /* 16px */
+  --space-lg: 1.5rem;     /* 24px */
+  --space-xl: 2rem;       /* 32px */
+  --space-2xl: 3rem;      /* 48px */
+  --space-3xl: 4rem;      /* 64px */
+
+  /* Border Radii */
+  --radius-xs: 3px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+
+  /* Tactile Physical Borders & Shadows (Arcade Cabinet & Card Feel) */
+  --border-width-sm: 1px;
+  --border-width-md: 2px;
+  --border-width-lg: 3px;
+
+  --shadow-tactile-sm: 2px 2px 0px var(--color-ink);
+  --shadow-tactile-md: 3px 3px 0px var(--color-ink);
+  --shadow-tactile-lg: 5px 5px 0px var(--color-ink);
+  --shadow-tactile-accent: 3px 3px 0px var(--color-accent);
+  --shadow-inset: inset 2px 2px 4px rgba(28, 25, 23, 0.08);
+
+  /* Focus Rings */
+  --focus-ring: 0 0 0 3px rgba(224, 86, 38, 0.45);
+  --focus-ring-offset: 2px;
+
+  /* Layout Widths */
+  --max-width-content: 1140px;
+  --max-width-text: 720px;
+  --max-width-game: 960px;
+
+  /* Motion & Transitions */
+  --transition-fast: 120ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Z-Index Hierarchy */
+  --z-base: 1;
+  --z-dropdown: 50;
+  --z-nav: 100;
+  --z-modal-backdrop: 500;
+  --z-modal: 600;
+  --z-toast: 1000;
+}

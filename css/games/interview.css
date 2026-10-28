@@ -151,3 +151,16 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+@media (max-width: 480px) {
+  .star-rubric-summary {
+    grid-template-columns: 1fr;
+  }
+  .scenario-option-btn {
+    padding: var(--space-sm) var(--space-md);
+    font-size: var(--font-size-xs);
+  }
+  .scenario-brief-card {
+    padding: var(--space-md);
+  }
+}

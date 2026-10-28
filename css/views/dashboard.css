@@ -492,3 +492,40 @@
   font-size: var(--font-size-xs);
   color: var(--color-ink-faint);
 }
+
+/* 9. Daily Technical Sprint Styling & Responsive Tap Targets */
+.daily-option-btn {
+  width: 100%;
+  min-height: 44px; /* Accessible touch target */
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: left;
+  padding: var(--space-xs) var(--space-sm);
+  font-size: var(--font-size-sm);
+  line-height: 1.4;
+  white-space: normal;
+  word-break: break-word;
+  background-color: var(--color-surface);
+  border: var(--border-width-sm) solid var(--color-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.daily-option-btn:hover:not(:disabled) {
+  border-color: var(--color-ink);
+  background-color: var(--color-surface-hover);
+}
+
+.daily-option-btn:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
+}
+
+@media (max-width: 480px) {
+  .daily-option-btn {
+    padding: 0.65rem 0.75rem;
+    font-size: var(--font-size-xs);
+  }
+}

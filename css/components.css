@@ -1,9 +1,9 @@
 /* ==========================================================================
    Interview Arcade — Reusable Components
-   Handcrafted tactile indie arcade aesthetic
+   Editorial Design System with Tactile Feedback
    ========================================================================== */
 
-/* 1. Tactile Buttons */
+/* 1. Tactile Editorial Buttons */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -13,14 +13,14 @@
   font-family: var(--font-sans);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
-  line-height: 1;
+  line-height: 1.2;
   text-decoration: none;
   border-radius: var(--radius-sm);
-  border: var(--border-width-md) solid var(--color-ink);
+  border: var(--border-width-sm) solid var(--color-ink);
   background-color: var(--color-surface);
   color: var(--color-ink);
-  box-shadow: var(--shadow-tactile-sm);
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
+  box-shadow: 0 1px 2px rgba(28, 25, 23, 0.08);
+  transition: all var(--transition-fast);
   user-select: none;
   cursor: pointer;
 }
@@ -29,44 +29,49 @@
   text-decoration: none;
   color: var(--color-ink);
   background-color: var(--color-surface-hover);
-  transform: translate(-1px, -1px);
-  box-shadow: var(--shadow-tactile-md);
+  box-shadow: 0 2px 4px rgba(28, 25, 23, 0.12);
+  transform: translateY(-1px);
 }
 
 .btn:active {
-  transform: translate(2px, 2px);
-  box-shadow: 0px 0px 0px var(--color-ink);
+  transform: translateY(1px);
+  box-shadow: 0 0 0 rgba(28, 25, 23, 0.1);
   background-color: var(--color-surface-active);
 }
 
 .btn:disabled, .btn[aria-disabled="true"] {
-  opacity: 0.55;
+  opacity: 0.5;
   cursor: not-allowed;
   transform: none !important;
-  box-shadow: var(--shadow-tactile-sm) !important;
+  box-shadow: none !important;
   pointer-events: none;
 }
 
-/* Primary Button (Arcade Vermilion) */
+/* Primary Button (Terracotta Vermilion) */
 .btn-primary {
   background-color: var(--color-accent);
+  border-color: var(--color-accent);
   color: #FFFFFF;
+  box-shadow: 0 1px 3px rgba(224, 86, 38, 0.35);
 }
 
 .btn-primary:hover {
   background-color: var(--color-accent-hover);
+  border-color: var(--color-accent-hover);
   color: #FFFFFF;
+  box-shadow: 0 3px 6px rgba(224, 86, 38, 0.4);
 }
 
 .btn-primary:active {
   background-color: var(--color-accent-active);
+  border-color: var(--color-accent-active);
 }
 
-/* Subtle / Ghost Button */
+/* Subtle / Neutral Button */
 .btn-subtle {
-  background-color: transparent;
+  background-color: var(--color-surface);
   border-color: var(--color-border);
-  box-shadow: none;
+  box-shadow: var(--shadow-xs);
   color: var(--color-ink-muted);
 }
 
@@ -74,31 +79,32 @@
   background-color: var(--color-bg-subtle);
   border-color: var(--color-ink);
   color: var(--color-ink);
-  box-shadow: var(--shadow-tactile-sm);
 }
 
 .btn-danger {
   background-color: var(--color-error);
+  border-color: var(--color-error);
   color: #FFFFFF;
 }
 
 .btn-danger:hover {
   background-color: #991B1B;
+  border-color: #991B1B;
   color: #FFFFFF;
 }
 
 /* Button Sizing */
 .btn-sm {
-  padding: 0.35rem 0.65rem;
+  padding: 0.3rem 0.65rem;
   font-size: var(--font-size-xs);
 }
 
 .btn-lg {
-  padding: 0.75rem 1.5rem;
+  padding: 0.75rem 1.4rem;
   font-size: var(--font-size-base);
 }
 
-/* 2. Distinctive Badges & Tags */
+/* 2. Badges & Skill Tags */
 .badge {
   display: inline-flex;
   align-items: center;
@@ -114,13 +120,25 @@
   line-height: 1.2;
 }
 
+.badge-primary {
+  background-color: var(--color-ink);
+  border-color: var(--color-ink);
+  color: #FFFFFF;
+}
+
 .badge-accent {
   background-color: var(--color-accent-surface);
   border-color: var(--color-accent-border);
   color: var(--color-accent);
 }
 
-/* Real Difficulty Chips */
+.badge-subtle {
+  background-color: var(--color-bg-subtle);
+  border-color: var(--color-border-subtle);
+  color: var(--color-ink-muted);
+}
+
+/* Genuine Difficulty Badges */
 .badge-easy {
   background-color: var(--diff-easy-bg);
   border-color: var(--diff-easy-border);
@@ -139,7 +157,7 @@
   color: var(--diff-hard-text);
 }
 
-/* 3. Difficulty Selector Component */
+/* 3. Difficulty Segmented Selector */
 .difficulty-selector {
   display: inline-flex;
   align-items: center;
@@ -157,6 +175,7 @@
   font-weight: var(--font-weight-medium);
   border-radius: var(--radius-xs);
   border: 1px solid transparent;
+  background: transparent;
   color: var(--color-ink-muted);
   cursor: pointer;
   transition: all var(--transition-fast);
@@ -170,46 +189,47 @@
   background-color: var(--color-surface);
   color: var(--color-ink);
   font-weight: var(--font-weight-bold);
-  border-color: var(--color-ink);
-  box-shadow: 1px 1px 0px var(--color-ink);
+  border-color: var(--color-border);
+  box-shadow: 0 1px 2px rgba(28, 25, 23, 0.08);
 }
 
-/* 4. Tactile Card Surfaces */
+/* 4. Editorial Card Surfaces */
 .card {
   background-color: var(--color-surface);
-  border: var(--border-width-md) solid var(--color-ink);
+  border: var(--border-width-sm) solid var(--color-border);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-tactile-md);
+  box-shadow: var(--shadow-sm);
   padding: var(--space-lg);
   display: flex;
   flex-direction: column;
   position: relative;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .card-interactive {
   cursor: pointer;
   text-decoration: none;
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .card-interactive:hover {
   text-decoration: none;
-  transform: translate(-2px, -2px);
-  box-shadow: var(--shadow-tactile-lg);
+  border-color: var(--color-ink-faint);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
 
 .card-interactive:active {
-  transform: translate(2px, 2px);
-  box-shadow: 1px 1px 0px var(--color-ink);
+  transform: translateY(0);
+  box-shadow: var(--shadow-xs);
 }
 
 /* 5. Stat Tiles */
 .stat-tile {
   background-color: var(--color-surface);
-  border: var(--border-width-md) solid var(--color-ink);
+  border: var(--border-width-sm) solid var(--color-border);
   border-radius: var(--radius-sm);
   padding: var(--space-md);
-  box-shadow: var(--shadow-tactile-sm);
+  box-shadow: var(--shadow-xs);
   display: flex;
   flex-direction: column;
   gap: var(--space-3xs);
@@ -218,24 +238,24 @@
 .stat-value {
   font-family: var(--font-mono);
   font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-extrabold);
   color: var(--color-ink);
-  line-height: 1;
+  line-height: 1.1;
 }
 
 .stat-label {
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-ink-muted);
+  font-size: 0.725rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-ink-faint);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
 }
 
-/* 6. Honest Notification & Notice Boxes */
+/* 6. Notice & Notification Boxes */
 .notice-box {
   padding: var(--space-md);
   border-radius: var(--radius-sm);
-  border: var(--border-width-md) solid var(--color-ink);
+  border: var(--border-width-sm) solid var(--color-border);
   background-color: var(--color-bg-subtle);
   display: flex;
   gap: var(--space-sm);
@@ -245,19 +265,19 @@
 
 .notice-box.notice-info {
   background-color: var(--color-info-bg);
-  border-color: var(--color-info);
+  border-color: var(--color-info-border);
   color: var(--color-info);
 }
 
 .notice-box.notice-warning {
   background-color: var(--color-warning-bg);
-  border-color: var(--color-warning);
+  border-color: var(--color-warning-border);
   color: var(--color-warning);
 }
 
 .notice-box.notice-success {
   background-color: var(--color-success-bg);
-  border-color: var(--color-success);
+  border-color: var(--color-success-border);
   color: var(--color-success);
 }
 
@@ -265,7 +285,9 @@
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background-color: rgba(28, 25, 23, 0.6);
+  background-color: rgba(28, 25, 23, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -283,44 +305,41 @@
 
 .modal-dialog {
   background-color: var(--color-surface);
-  border: var(--border-width-lg) solid var(--color-ink);
+  border: var(--border-width-sm) solid var(--color-border);
   border-radius: var(--radius-lg);
-  box-shadow: 8px 8px 0px var(--color-ink);
+  box-shadow: var(--shadow-xl);
   width: 100%;
-  max-width: 560px;
+  max-width: 520px;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  transform: translateY(16px);
+  transform: translateY(12px) scale(0.98);
   transition: transform var(--transition-normal);
 }
 
 .modal-backdrop.active .modal-dialog {
-  transform: translateY(0);
+  transform: translateY(0) scale(1);
 }
 
 .modal-header {
   padding: var(--space-md) var(--space-lg);
-  border-bottom: var(--border-width-md) solid var(--color-ink);
+  border-bottom: var(--border-width-sm) solid var(--color-border-subtle);
   display: flex;
   align-items: center;
   justify-content: space-between;
   background-color: var(--color-bg-subtle);
 }
 
+.modal-header h3 {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  margin: 0;
+}
+
 .modal-body {
   padding: var(--space-lg);
   overflow-y: auto;
-}
-
-.modal-footer {
-  padding: var(--space-md) var(--space-lg);
-  border-top: var(--border-width-sm) solid var(--color-border);
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--space-xs);
-  background-color: var(--color-bg-subtle);
 }
 
 /* 8. Audio Toggle Button */
@@ -336,6 +355,7 @@
   background-color: var(--color-surface);
   color: var(--color-ink-muted);
   cursor: pointer;
+  transition: all var(--transition-fast);
 }
 
 .audio-toggle:hover {
@@ -347,7 +367,7 @@
   opacity: 0.7;
 }
 
-/* 9. Live Region Toast */
+/* 9. Accessible Live Announcer Toast */
 #app-toast {
   position: fixed;
   bottom: var(--space-lg);
@@ -355,11 +375,11 @@
   z-index: var(--z-toast);
   background-color: var(--color-ink);
   color: #FFFFFF;
-  padding: var(--space-sm) var(--space-md);
+  padding: 0.65rem 1rem;
   border-radius: var(--radius-sm);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-lg);
   display: flex;
   align-items: center;
   gap: var(--space-xs);
@@ -372,4 +392,23 @@
 #app-toast.visible {
   transform: translateY(0);
   opacity: 1;
+}
+
+/* 10. Form Controls & Inputs */
+.feedback-input, input[type="text"], input[type="email"], input[type="password"], select, textarea {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  color: var(--color-ink);
+  background-color: var(--color-surface);
+  border: var(--border-width-sm) solid var(--color-border);
+  border-radius: var(--radius-sm);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.feedback-input:focus, input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: var(--focus-ring);
 }

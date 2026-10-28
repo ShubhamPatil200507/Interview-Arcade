@@ -1,14 +1,17 @@
-/* Interview Arcade — Interview Simulation Chamber Styles */
+/* ==========================================================================
+   Interview Arcade — Interview Simulation Chamber Styles
+   Editorial Placement Preparation Platform
+   ========================================================================== */
 
 .interview-chamber {
-  max-width: 900px;
+  max-width: var(--max-width-content);
   margin: 0 auto;
 }
 
 .scenario-brief-card {
   background: var(--color-surface);
-  border: 2px solid var(--color-ink);
-  box-shadow: var(--shadow-tactile);
+  border: var(--border-width-sm) solid var(--color-border);
+  box-shadow: var(--shadow-sm);
   border-radius: var(--radius-md);
   padding: var(--space-lg);
   margin-bottom: var(--space-lg);
@@ -23,10 +26,10 @@
 }
 
 .scenario-situation-box {
-  background: var(--color-canvas);
+  background: var(--color-bg-subtle);
   border-left: 4px solid var(--color-accent);
   padding: var(--space-md);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-xs);
   margin: var(--space-md) 0;
   font-size: var(--font-size-sm);
   line-height: 1.6;
@@ -38,19 +41,19 @@
   gap: var(--space-xs);
   margin-top: var(--space-md);
   padding-top: var(--space-sm);
-  border-top: 1px dashed var(--color-ink-muted);
+  border-top: 1px dashed var(--color-border);
 }
 
 .star-pillar-tag {
   background: var(--color-surface);
-  border: 1px solid var(--color-ink);
+  border: var(--border-width-sm) solid var(--color-border);
   padding: var(--space-xs);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-xs);
   font-size: var(--font-size-xs);
 }
 
 .star-pillar-letter {
-  font-weight: 900;
+  font-weight: 800;
   color: var(--color-accent);
   margin-right: 4px;
 }
@@ -65,9 +68,9 @@
 .scenario-option-btn {
   text-align: left;
   background: var(--color-surface);
-  border: 2px solid var(--color-ink);
-  box-shadow: var(--shadow-tactile-sm);
-  border-radius: var(--radius-md);
+  border: var(--border-width-sm) solid var(--color-border);
+  box-shadow: var(--shadow-xs);
+  border-radius: var(--radius-sm);
   padding: var(--space-md) var(--space-lg);
   cursor: pointer;
   transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
@@ -81,8 +84,9 @@
 }
 
 .scenario-option-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-tactile);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+  border-color: var(--color-ink);
   background: #fff;
 }
 
@@ -93,17 +97,17 @@
 
 .scenario-option-btn.selected {
   border-color: var(--color-accent);
-  background: rgba(224, 86, 38, 0.08);
+  background: var(--color-accent-surface);
 }
 
 .scenario-option-btn.correct {
   border-color: var(--color-success);
-  background: rgba(34, 139, 34, 0.1);
+  background: var(--color-success-bg);
 }
 
 .scenario-option-btn.incorrect {
   border-color: var(--color-error);
-  background: rgba(217, 83, 79, 0.1);
+  background: var(--color-error-bg);
 }
 
 .option-key-badge {
@@ -113,10 +117,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid var(--color-ink);
-  border-radius: var(--radius-sm);
+  border: var(--border-width-sm) solid var(--color-border);
+  border-radius: var(--radius-xs);
   font-weight: bold;
-  background: var(--color-canvas);
+  background: var(--color-bg-subtle);
 }
 
 .scenario-option-btn.selected .option-key-badge {
@@ -126,8 +130,8 @@
 }
 
 .scenario-feedback-card {
-  border: 2px solid var(--color-ink);
-  box-shadow: var(--shadow-tactile);
+  border: var(--border-width-sm) solid var(--color-border);
+  box-shadow: var(--shadow-sm);
   border-radius: var(--radius-md);
   padding: var(--space-lg);
   background: var(--color-surface);
@@ -135,11 +139,11 @@
 }
 
 .scenario-feedback-card.success-card {
-  border-left: 8px solid var(--color-success);
+  border-left: 4px solid var(--color-success);
 }
 
 .scenario-feedback-card.error-card {
-  border-left: 8px solid var(--color-error);
+  border-left: 4px solid var(--color-error);
 }
 
 @media (max-width: 640px) {

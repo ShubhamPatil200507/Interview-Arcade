@@ -1,37 +1,54 @@
 /* ==========================================================================
    Interview Arcade — Layout Styles
+   Two-Column Editorial Application Shell
    ========================================================================== */
 
-/* App Shell Structure */
-#app-header {
-  position: sticky;
-  top: 0;
-  z-index: var(--z-nav);
+/* 1. Master Application Layout */
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
   background-color: var(--color-bg);
-  border-bottom: var(--border-width-md) solid var(--color-ink);
-  box-shadow: 0 2px 0px rgba(28, 25, 23, 0.05);
 }
 
-.header-inner {
-  max-width: var(--max-width-content);
-  margin: 0 auto;
-  padding: var(--space-xs) var(--space-md);
+/* 2. Persistent Left Navigation Sidebar */
+.app-sidebar {
+  width: var(--sidebar-width);
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: var(--z-sidebar);
+  background-color: var(--color-bg-subtle);
+  border-right: var(--border-width-sm) solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: transform var(--transition-normal);
+}
+
+.sidebar-header {
+  height: var(--topbar-height);
+  padding: 0 var(--space-md);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-md);
+  border-bottom: var(--border-width-sm) solid var(--color-border-subtle);
+  background-color: var(--color-bg-subtle);
+  position: sticky;
+  top: 0;
+  z-index: 2;
 }
 
-/* Brand Logo */
+/* Brand Logo in Sidebar */
 .brand {
   display: flex;
   align-items: center;
   gap: var(--space-xs);
   text-decoration: none;
   color: var(--color-ink);
-  font-weight: var(--font-weight-bold);
-  font-size: var(--font-size-md);
-  letter-spacing: -0.02em;
 }
 
 .brand:hover {
@@ -43,72 +60,176 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  width: 28px;
+  height: 28px;
   background-color: var(--color-accent);
   color: #FFFFFF;
   font-family: var(--font-mono);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-bold);
-  padding: 0.15rem 0.45rem;
   border-radius: var(--radius-xs);
-  border: var(--border-width-md) solid var(--color-ink);
-  box-shadow: 1.5px 1.5px 0px var(--color-ink);
+  box-shadow: 0 1px 2px rgba(224, 86, 38, 0.3);
 }
 
 .brand-title {
   display: flex;
-  align-items: baseline;
-  gap: var(--space-2xs);
+  flex-direction: column;
+  line-height: 1.1;
 }
 
-.brand-title span {
+.brand-name {
   font-family: var(--font-mono);
-  font-size: var(--font-size-xs);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
   color: var(--color-ink-muted);
-  font-weight: var(--font-weight-regular);
+  font-weight: var(--font-weight-bold);
 }
 
-/* Main Navigation */
-.main-nav {
+.brand-sub {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-extrabold);
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+}
+
+/* Sidebar Navigation Items */
+.sidebar-nav {
+  padding: var(--space-sm) var(--space-xs);
   display: flex;
-  align-items: center;
-  gap: var(--space-2xs);
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.nav-section-title {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.08em;
+  color: var(--color-ink-faint);
+  padding: var(--space-sm) var(--space-xs) var(--space-3xs);
 }
 
 .nav-link {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: var(--space-2xs);
-  padding: 0.4rem 0.75rem;
+  gap: var(--space-xs);
+  padding: 0.45rem 0.65rem;
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
-  color: var(--color-ink);
+  color: var(--color-ink-muted);
   text-decoration: none;
   border-radius: var(--radius-sm);
-  border: var(--border-width-sm) solid transparent;
+  border-left: 3px solid transparent;
   transition: all var(--transition-fast);
 }
 
 .nav-link:hover {
-  background-color: var(--color-bg-subtle);
-  border-color: var(--color-border);
+  background-color: var(--color-surface-hover);
+  color: var(--color-ink);
   text-decoration: none;
 }
 
 .nav-link.active {
   background-color: var(--color-surface);
-  border: var(--border-width-md) solid var(--color-ink);
-  box-shadow: 2px 2px 0px var(--color-ink);
-  font-weight: var(--font-weight-bold);
+  color: var(--color-accent);
+  font-weight: var(--font-weight-semibold);
+  border-left-color: var(--color-accent);
+  box-shadow: var(--shadow-xs);
 }
 
-/* Header Utilities */
-.header-actions {
+.nav-icon {
+  flex-shrink: 0;
+  stroke: currentColor;
+}
+
+/* Sidebar Footer & System Status */
+.sidebar-footer {
+  padding: var(--space-sm) var(--space-md);
+  border-top: var(--border-width-sm) solid var(--color-border-subtle);
+  background-color: var(--color-bg-subtle);
+}
+
+.sidebar-sync-badge {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--color-ink-faint);
+}
+
+.sync-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-success);
+  display: inline-block;
+  box-shadow: 0 0 0 2px rgba(21, 128, 61, 0.2);
+}
+
+/* 3. Main Content Wrapper */
+.app-main-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin-left: var(--sidebar-width);
+  background-color: var(--color-bg);
+  min-width: 0; /* Prevents flex children blowout */
+}
+
+/* 4. Compact Application Topbar */
+.app-topbar {
+  height: var(--topbar-height);
+  position: sticky;
+  top: 0;
+  z-index: var(--z-topbar);
+  background-color: rgba(250, 248, 245, 0.94);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: var(--border-width-sm) solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-lg);
+  gap: var(--space-md);
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.topbar-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  font-size: var(--font-size-sm);
+}
+
+.breadcrumb-root {
+  color: var(--color-ink-muted);
+  font-weight: var(--font-weight-regular);
+}
+
+.breadcrumb-separator {
+  color: var(--color-ink-faint);
+}
+
+.breadcrumb-leaf {
+  color: var(--color-ink);
+  font-weight: var(--font-weight-semibold);
+}
+
+.topbar-right {
   display: flex;
   align-items: center;
   gap: var(--space-xs);
 }
 
-/* Main Viewport Container */
+/* 5. Main Content Area */
 #main-content {
   flex: 1;
   width: 100%;
@@ -117,14 +238,14 @@
 .content-container {
   max-width: var(--max-width-content);
   margin: 0 auto;
-  padding: var(--space-lg) var(--space-md) var(--space-2xl);
+  padding: var(--space-lg) var(--space-lg) var(--space-3xl);
 }
 
-/* App Footer */
+/* 6. Application Footer */
 #app-footer {
-  border-top: var(--border-width-md) solid var(--color-ink);
+  border-top: var(--border-width-sm) solid var(--color-border);
   background-color: var(--color-bg-subtle);
-  padding: var(--space-lg) var(--space-md);
+  padding: var(--space-md) var(--space-lg);
   margin-top: auto;
 }
 
@@ -133,7 +254,7 @@
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
+  gap: var(--space-sm);
   font-size: var(--font-size-sm);
   color: var(--color-ink-muted);
 }
@@ -146,17 +267,23 @@
   }
 }
 
+.footer-subtext {
+  font-size: var(--font-size-xs);
+  color: var(--color-ink-faint);
+  margin-top: 2px;
+}
+
 .footer-meta {
   display: flex;
   align-items: center;
-  gap: var(--space-md);
+  gap: var(--space-xs);
   flex-wrap: wrap;
 }
 
 .footer-badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.3rem;
   font-family: var(--font-mono);
   font-size: var(--font-size-xs);
   padding: 0.2rem 0.5rem;
@@ -165,7 +292,7 @@
   border-radius: var(--radius-xs);
 }
 
-/* Game Frame Layout */
+/* 7. Game Frame Layout */
 .game-frame {
   max-width: var(--max-width-game);
   margin: 0 auto;
@@ -180,10 +307,10 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-md);
-  padding: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
   background-color: var(--color-surface);
-  border: var(--border-width-md) solid var(--color-ink);
-  box-shadow: var(--shadow-tactile-md);
+  border: var(--border-width-sm) solid var(--color-border);
+  box-shadow: var(--shadow-sm);
   border-radius: var(--radius-md);
 }
 
@@ -201,7 +328,7 @@
   flex-wrap: wrap;
 }
 
-/* Responsive Grid Patterns */
+/* 8. Responsive Grid Patterns */
 .grid-cards {
   display: grid;
   grid-template-columns: 1fr;
@@ -217,5 +344,74 @@
 @media (min-width: 1024px) {
   .grid-cards {
     grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Icon Buttons & Controls */
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  border: var(--border-width-sm) solid var(--color-border);
+  background-color: var(--color-surface);
+  color: var(--color-ink);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-icon:hover {
+  background-color: var(--color-bg-subtle);
+  border-color: var(--color-ink);
+}
+
+/* Mobile & Drawer Rules */
+.mobile-only {
+  display: none !important;
+}
+
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(28, 25, 23, 0.4);
+  z-index: calc(var(--z-drawer) - 1);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-normal);
+}
+
+@media (max-width: 1023px) {
+  .mobile-only {
+    display: inline-flex !important;
+  }
+
+  .app-sidebar {
+    transform: translateX(-100%);
+    z-index: var(--z-drawer);
+    width: 280px;
+    box-shadow: var(--shadow-xl);
+  }
+
+  .app-sidebar.open {
+    transform: translateX(0);
+  }
+
+  .sidebar-backdrop.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .app-main-wrapper {
+    margin-left: 0;
+  }
+
+  .app-topbar {
+    padding: 0 var(--space-md);
+  }
+
+  .content-container {
+    padding: var(--space-md) var(--space-md) var(--space-2xl);
   }
 }

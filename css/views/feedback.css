@@ -1,5 +1,6 @@
 /* ==========================================================================
-   Interview Arcade — Game 9: Feedback System
+   Interview Arcade — Feedback System Styles
+   Editorial Placement Preparation Platform
    ========================================================================== */
 
 .feedback-form {
@@ -7,10 +8,10 @@
   flex-direction: column;
   gap: var(--space-md);
   background-color: var(--color-surface);
-  border: var(--border-width-md) solid var(--color-ink);
+  border: var(--border-width-sm) solid var(--color-border);
   border-radius: var(--radius-md);
   padding: var(--space-xl);
-  box-shadow: var(--shadow-tactile-md);
+  box-shadow: var(--shadow-sm);
 }
 
 .rating-stars {
@@ -35,13 +36,16 @@
 .feedback-input {
   width: 100%;
   padding: var(--space-sm);
-  border: var(--border-width-md) solid var(--color-ink);
+  border: var(--border-width-sm) solid var(--color-border);
   border-radius: var(--radius-sm);
   font-family: var(--font-sans);
   font-size: var(--font-size-sm);
+  background-color: var(--color-surface);
+  color: var(--color-ink);
 }
 
 .feedback-input:focus {
   outline: none;
+  border-color: var(--color-accent);
   box-shadow: var(--focus-ring);
 }

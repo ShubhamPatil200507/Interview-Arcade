@@ -103,6 +103,45 @@ class Router {
   }
 
   _updateNavLinks(currentPath) {
+    // Route label dictionary for topbar breadcrumb
+    const routeTitles = {
+      '/': 'Practice Chambers',
+      '/arcade': 'Practice Chambers',
+      '/dashboard': 'Dashboard & Roadmap',
+      '/assessment': 'Diagnostic Test',
+      '/interview': 'Interview Simulator',
+      '/mistakes': 'Mistakes Notebook',
+      '/resume': 'Resume Lens',
+      '/feedback': 'Feedback Chamber',
+      '/about': 'Architecture & Rules',
+      '/game/tictactoe': 'Tic Tac Toe + OOP Quiz',
+      '/game/memory': 'Technical Memory Match',
+      '/game/aptitude': 'Quantitative Aptitude',
+      '/game/resume': 'Resume Keyword Matcher',
+      '/game/sql': 'SQL Fill in the Blanks',
+      '/game/riddles': 'Visual Logic Riddles',
+      '/game/dsa': 'DSA Match the Following',
+      '/game/debugger': 'Debug the Code (C++)',
+      '/game/interview': 'Placement Interview Simulator',
+      '/game/assessment': 'Diagnostic Skill Assessment',
+      '/game/mistakes': 'Mistakes Notebook',
+      '/game/feedback': 'Feedback Chamber',
+      '/game/dashboard': 'Progress Log & Analytics'
+    };
+
+    const breadcrumbElem = document.getElementById('breadcrumb-current');
+    if (breadcrumbElem) {
+      breadcrumbElem.textContent = routeTitles[currentPath] || 'Practice Chamber';
+    }
+
+    // Auto-close mobile drawer on navigation
+    const sidebar = document.getElementById('app-sidebar');
+    const backdrop = document.getElementById('sidebar-backdrop');
+    if (sidebar && sidebar.classList.contains('open')) {
+      sidebar.classList.remove('open');
+      if (backdrop) backdrop.classList.remove('active');
+    }
+
     document.querySelectorAll('.nav-link').forEach(link => {
       const href = link.getAttribute('href') || '';
       const linkPath = href.replace('#', '') || '/';

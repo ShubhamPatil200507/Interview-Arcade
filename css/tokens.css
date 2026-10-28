@@ -1,32 +1,33 @@
 /* ==========================================================================
    Interview Arcade — Design Tokens
-   Handcrafted Indie Arcade Aesthetic
+   Editorial Placement Preparation Platform
    ========================================================================== */
 
 :root {
-  /* Surface & Background (Warm Ink & Paper Palette) */
-  --color-bg: #FBF9F5;              /* Warm off-white page background */
-  --color-bg-subtle: #F3EFE6;       /* Warm neutral panel */
-  --color-surface: #FFFFFF;         /* Crisp card surface */
-  --color-surface-hover: #FFFDF9;   /* Hovered card */
-  --color-surface-active: #F4EFE6;  /* Pressed card state */
-  --color-surface-inset: #ECE6D8;   /* Inset container / well */
+  /* Surface & Canvas (Warm Paper & Rich Ink Palette) */
+  --color-bg: #FAF8F5;              /* Warm off-white canvas */
+  --color-bg-subtle: #F3EFE6;       /* Warm stone neutral panel */
+  --color-bg-elevated: #EDE7DC;     /* Recessed well / active sidebar item */
+  --color-surface: #FFFFFF;         /* Crisp paper card surface */
+  --color-surface-hover: #FFFDF9;   /* Hovered card surface */
+  --color-surface-active: #F5EFE4;  /* Pressed card state */
+  --color-surface-inset: #ECE5D8;   /* Inset well / code preview container */
   --color-surface-code: #1A1A1E;    /* Deep charcoal code box */
 
-  /* Text & Ink */
+  /* Text & Ink Typography */
   --color-ink: #1C1917;             /* Dark near-black charcoal */
-  --color-ink-muted: #57534E;       /* Secondary descriptive text */
-  --color-ink-faint: #78716C;       /* Tertiary text / captions / hints */
-  --color-ink-code: #F3F4F6;        /* Monospace code text */
+  --color-ink-muted: #57534E;       /* Warm secondary text */
+  --color-ink-faint: #78716C;       /* Tertiary captions / hints */
+  --color-ink-code: #F5F5F4;        /* Monospace text */
   --color-ink-inverse: #FFFFFF;     /* White text on dark/accent surfaces */
 
-  /* Borders & Dividers */
-  --color-border: #D8D2C5;          /* Subtle structural border */
-  --color-border-subtle: #E8E3D8;   /* Light line divider */
-  --color-border-bold: #1C1917;     /* High-contrast ink border */
+  /* Structural Borders & Lines */
+  --color-border: #E2DBD0;          /* Refined subtle border */
+  --color-border-subtle: #ECE6DB;   /* Light line divider */
+  --color-border-bold: #292524;     /* High-contrast ink border */
 
-  /* Primary Brand Accent (Arcade Amber / Warm Vermilion) */
-  --color-accent: #E05626;          /* Distinctive warm arcade accent */
+  /* Primary Brand Accent (Warm Terracotta / Arcade Vermilion) */
+  --color-accent: #E05626;          /* Distinctive warm accent */
   --color-accent-hover: #C8461A;    /* Darkened hover accent */
   --color-accent-active: #A93610;   /* Pressed accent */
   --color-accent-surface: #FDF3EC;  /* Light tint surface */
@@ -47,7 +48,7 @@
   --color-info-bg: #EEF2FF;         /* Info surface */
   --color-info-border: #A5B4FC;     /* Info border */
 
-  /* Difficulty Indicators */
+  /* Genuine Difficulty Indicators */
   --diff-easy-bg: #ECFDF5;
   --diff-easy-border: #10B981;
   --diff-easy-text: #065F46;
@@ -68,8 +69,8 @@
   --font-size-md: 1.125rem;    /* 18px */
   --font-size-lg: 1.25rem;     /* 20px */
   --font-size-xl: 1.5rem;      /* 24px */
-  --font-size-2xl: 2rem;       /* 32px */
-  --font-size-3xl: 2.5rem;     /* 40px */
+  --font-size-2xl: 1.875rem;   /* 30px */
+  --font-size-3xl: 2.25rem;    /* 36px */
 
   --font-weight-regular: 400;
   --font-weight-medium: 500;
@@ -90,34 +91,43 @@
   --space-md: 1rem;       /* 16px */
   --space-lg: 1.5rem;     /* 24px */
   --space-xl: 2rem;       /* 32px */
-  --space-2xl: 3rem;      /* 48px */
-  --space-3xl: 4rem;      /* 64px */
+  --space-2xl: 2.5rem;    /* 40px */
+  --space-3xl: 3.5rem;    /* 56px */
 
   /* Border Radii */
-  --radius-xs: 3px;
+  --radius-xs: 4px;
   --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
   --radius-full: 9999px;
 
-  /* Tactile Physical Borders & Shadows (Arcade Cabinet & Card Feel) */
+  /* Editorial Shadows & Tactile Accents */
   --border-width-sm: 1px;
   --border-width-md: 2px;
   --border-width-lg: 3px;
 
+  --shadow-xs: 0 1px 2px rgba(28, 25, 23, 0.04);
+  --shadow-sm: 0 1px 3px rgba(28, 25, 23, 0.06), 0 1px 2px rgba(28, 25, 23, 0.04);
+  --shadow-md: 0 4px 6px -1px rgba(28, 25, 23, 0.07), 0 2px 4px -2px rgba(28, 25, 23, 0.04);
+  --shadow-lg: 0 10px 15px -3px rgba(28, 25, 23, 0.08), 0 4px 6px -4px rgba(28, 25, 23, 0.04);
+  --shadow-xl: 0 20px 25px -5px rgba(28, 25, 23, 0.1), 0 8px 10px -6px rgba(28, 25, 23, 0.05);
+
   --shadow-tactile-sm: 2px 2px 0px var(--color-ink);
   --shadow-tactile-md: 3px 3px 0px var(--color-ink);
-  --shadow-tactile-lg: 5px 5px 0px var(--color-ink);
+  --shadow-tactile-lg: 4px 4px 0px var(--color-ink);
   --shadow-tactile-accent: 3px 3px 0px var(--color-accent);
-  --shadow-inset: inset 2px 2px 4px rgba(28, 25, 23, 0.08);
+  --shadow-inset: inset 0 2px 4px rgba(28, 25, 23, 0.06);
 
   /* Focus Rings */
-  --focus-ring: 0 0 0 3px rgba(224, 86, 38, 0.45);
+  --focus-ring: 0 0 0 3px rgba(224, 86, 38, 0.35);
   --focus-ring-offset: 2px;
 
-  /* Layout Widths */
-  --max-width-content: 1140px;
-  --max-width-text: 720px;
+  /* Layout Dimensions */
+  --sidebar-width: 256px;
+  --topbar-height: 56px;
+  --max-width-content: 1160px;
+  --max-width-text: 740px;
   --max-width-game: 960px;
 
   /* Motion & Transitions */
@@ -126,8 +136,10 @@
 
   /* Z-Index Hierarchy */
   --z-base: 1;
-  --z-dropdown: 50;
-  --z-nav: 100;
+  --z-sticky: 20;
+  --z-sidebar: 90;
+  --z-topbar: 100;
+  --z-drawer: 200;
   --z-modal-backdrop: 500;
   --z-modal: 600;
   --z-toast: 1000;

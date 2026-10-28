@@ -26,9 +26,33 @@ import { createMistakesView } from './views/mistakes.js';
 
 async function initApp() {
   setupSoundToggle();
+  setupMobileDrawer();
   await setupAuthUI();
   registerRoutes();
   router.init('app-view');
+}
+
+function setupMobileDrawer() {
+  const toggleBtn = document.getElementById('mobile-sidebar-toggle');
+  const closeBtn = document.getElementById('close-sidebar-btn');
+  const sidebar = document.getElementById('app-sidebar');
+  const backdrop = document.getElementById('sidebar-backdrop');
+
+  if (toggleBtn && sidebar) {
+    toggleBtn.addEventListener('click', () => {
+      sidebar.classList.add('open');
+      if (backdrop) backdrop.classList.add('active');
+      audio.click();
+    });
+  }
+
+  function closeDrawer() {
+    if (sidebar) sidebar.classList.remove('open');
+    if (backdrop) backdrop.classList.remove('active');
+  }
+
+  if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
+  if (backdrop) backdrop.addEventListener('click', closeDrawer);
 }
 
 async function setupAuthUI() {
@@ -76,7 +100,8 @@ async function setupAuthUI() {
     } else {
       container.innerHTML = `
         <button id="auth-modal-btn" type="button" class="btn btn-sm btn-subtle">
-          👤 Sign In / Track
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          <span>Sign In / Track</span>
         </button>
       `;
       const btn = container.querySelector('#auth-modal-btn');
